@@ -170,11 +170,10 @@ static void crt_screen_setup_aspect(unsigned width, unsigned height)
    switch_res_crt(width, height);
 }
 
-void crt_switch_res_core(unsigned width, unsigned height, float hz, unsigned crt_mode, int crt_switch_center_adjust, int monitor_index)
+void crt_switch_res_core(unsigned width, unsigned height, float hz, unsigned crt_mode, int crt_switch_center_adjust)
 {
    /* ra_core_hz float passed from within
     * void video_driver_monitor_adjust_system_rates(void) */
-	
    ra_core_width  = width;
    ra_core_height = height;
    ra_core_hz     = hz;
