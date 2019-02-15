@@ -249,12 +249,12 @@ int crt_compute_dynamic_width(int width)
    #endif
 
 
-   for (int i =0; i < 10; i++)
+   for (int i =1; i < 11; i++)
 
 
 
    {
-      dynamic_width = width**i;
+      dynamic_width = width*i;
       if ((dynamic_width * min_height * ra_core_hz) > p_clock)
          break;
 
