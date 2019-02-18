@@ -155,9 +155,6 @@ static bool x11_display_server_set_resolution(void *data,
    crt_name_id += 1;
    snprintf(crt_name, sizeof(crt_name), "CRT%d", crt_name_id);
 
-
-   snprintf(old_mode, sizeof(old_mode), "%s", new_mode);
-
    dsp                      = XOpenDisplay(NULL);
    screen                   = DefaultScreen ( dsp );
    window                   = RootWindow ( dsp, screen );
@@ -320,6 +317,7 @@ static bool x11_display_server_set_resolution(void *data,
 
     }
  }
+   snprintf(old_mode, sizeof(old_mode), "%s", new_mode);
    return true;
 }
 
