@@ -38,7 +38,7 @@
 
 static unsigned orig_width      = 0;
 static unsigned orig_height     = 0;
-static char old_mode[250]       = {0};
+static char old_mode[500]       = {0};
 static char orig_output[250]    = {0};
 static char new_mode[250]       = {0};
 static char xrandr[250]         = {0};
@@ -85,7 +85,7 @@ static void x11_display_server_destroy(void *data)
       system(output);
 
       snprintf(output, sizeof(output),
-            "xrandr --delmode %s %.s",orig_output, old_mode);
+            "xrandr --delmode %s %s",orig_output, old_mode);
       system(output);
 
       snprintf(output, sizeof(output), "xrandr --rmmode %s", old_mode);
