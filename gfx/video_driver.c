@@ -2415,7 +2415,7 @@ void video_driver_frame(const void *data, unsigned width,
          video_driver_frame_time_count++ &
          (MEASURE_FRAME_TIME_SAMPLES_COUNT - 1);
       frame_time                                   = new_time - fps_time;
-      video_driver_frame_time_samples[write_index] = frame_time;
+      video_driver_frame_time_samples[write_index] = frame_time*2;
       fps_time                                     = new_time;
 
       if (video_driver_frame_count == 1)
@@ -2514,7 +2514,7 @@ void video_driver_frame(const void *data, unsigned width,
 
    video_info.frame_rate = last_fps;
    video_info.frame_time = frame_time / 1000.0f;
-   video_info.frame_count = (uint64_t) video_driver_frame_count*2;
+   video_info.frame_count = (uint64_t) video_driver_frame_count;
 
    /* Slightly messy code,
     * but we really need to do processing before blocking on VSync
