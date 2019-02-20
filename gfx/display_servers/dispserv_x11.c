@@ -192,6 +192,13 @@ static bool x11_display_server_set_resolution(void *data,
    hsp    = (width * 1.140) - (xoffset*4);
 
    hmax = hbp;
+   
+   /*special case for genesis plus gx with full borders*/
+   if (width == 348 && (height == 288 || 240 || 576)){
+	   hfp    = width * 1.033;
+	   hsp    = (width * 1.110) - (xoffset*4);
+	   hbp  = width * 1.225;
+   }
 
    if (height < 241)
       vmax = 261;
