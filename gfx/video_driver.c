@@ -2512,7 +2512,7 @@ void video_driver_frame(const void *data, unsigned width,
       video_driver_window_title_update = true;
    }
 
-   video_info.frame_rate = last_fps*2;
+   video_info.frame_rate = last_fps;
    video_info.frame_time = frame_time / 1000.0f;
    video_info.frame_count = (uint64_t) video_driver_frame_count;
 
