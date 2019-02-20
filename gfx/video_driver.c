@@ -2632,7 +2632,7 @@ void video_driver_frame(const void *data, unsigned width,
          video_driver_frame_count,
          (unsigned)pitch, video_driver_msg, &video_info);
 
-   video_driver_frame_count = (video_driver_frame_count+1)*2;
+   video_driver_frame_count = (video_driver_frame_count+1)/2;
 
    /* Display the FPS, with a higher priority. */
    if (video_info.fps_show || video_info.framecount_show)
