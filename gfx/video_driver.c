@@ -1322,6 +1322,8 @@ bool video_monitor_fps_statistics(double *refresh_rate,
 
    samples = MIN(MEASURE_FRAME_TIME_SAMPLES_COUNT,
          (unsigned)video_driver_frame_time_count);
+   
+   samples = samples*2;
 
    if (samples < 2)
       return false;
