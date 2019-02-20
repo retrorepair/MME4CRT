@@ -2415,7 +2415,7 @@ void video_driver_frame(const void *data, unsigned width,
          video_driver_frame_time_count++ &
          (MEASURE_FRAME_TIME_SAMPLES_COUNT - 1);
       frame_time                                   = new_time - fps_time;
-      video_driver_frame_time_samples[write_index] = frame_time*2;
+      video_driver_frame_time_samples[write_index] = frame_time;
       fps_time                                     = new_time;
 
       if (video_driver_frame_count == 1)
@@ -2632,7 +2632,7 @@ void video_driver_frame(const void *data, unsigned width,
          video_driver_frame_count,
          (unsigned)pitch, video_driver_msg, &video_info);
 
-   video_driver_frame_count++;
+   video_driver_frame_count = (video_driver_frame_count+1)*2;
 
    /* Display the FPS, with a higher priority. */
    if (video_info.fps_show || video_info.framecount_show)
