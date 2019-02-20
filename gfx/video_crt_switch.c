@@ -192,11 +192,6 @@ void crt_switch_res_core(unsigned width, unsigned height,
       height = 240;
    }
    
-   
-     
-   
-   //printf("Interval timer: %d CRT_Adaptive_Vsync : %d\n",crt_vsync_interval_t, crt_vsync_interval);
-   
   if (height > 350)
   { 
       if (crt_vsync_interval_t  == 0)
@@ -207,7 +202,6 @@ void crt_switch_res_core(unsigned width, unsigned height,
       
          crt_switch_vsync(crt_vsync_interval); 
          video_driver_apply_state_changes();
-          printf("CRT VSYNC setting : %d \n", crt_vsync_interval);
           
       }
    
@@ -220,15 +214,12 @@ void crt_switch_res_core(unsigned width, unsigned height,
              
          crt_switch_vsync(crt_vsync_interval); 
          video_driver_apply_state_changes();
-        
-       
+               
       }
       if (crt_vsync_interval_t == 9)
          crt_vsync_interval_t = 0;
    
-  } 
-   
-        
+  }     
    
   if (height <= 350)
   { 
@@ -239,10 +230,9 @@ void crt_switch_res_core(unsigned width, unsigned height,
          crt_switch_vsync(crt_vsync_interval); 
          video_driver_apply_state_changes();
           
-      }
-
+     }
    
-   } 
+  } 
    
      
    ra_core_height = height;
