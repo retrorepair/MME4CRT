@@ -442,19 +442,19 @@ static void crt_rpi_switch(int width, int height, float hz)
          width, hfp, hsp, hbp, height, vfp,vsp, vbp,
          hz, ip_flag, pixel_clock);
 
-   vcos_init ();
+   vcos_init();
 
-   vchi_initialise (&vchi_instance);
+   vchi_initialise(&vchi_instance);
 
-   vchi_connect (NULL, 0, vchi_instance);
+   vchi_connect(NULL, 0, vchi_instance);
 
-   vc_vchi_gencmd_init (vchi_instance, &vchi_connection, 1);
+   vc_vchi_gencmd_init(vchi_instance, &vchi_connection, 1);
 
-   vc_gencmd (buffer, sizeof (buffer), set_hdmi_timing);
+   vc_gencmd(buffer, sizeof (buffer), set_hdmi_timing);
 
-   vc_gencmd_stop ();
+   vc_gencmd_stop();
 
-   vchi_disconnect (vchi_instance);
+   vchi_disconnect(vchi_instance);
 
    snprintf(output1,  sizeof(output1),
          "tvservice -e \"DMT 87\" > /dev/null");
