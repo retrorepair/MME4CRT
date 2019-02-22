@@ -236,7 +236,7 @@ static bool win32_display_server_set_resolution(void *data,
       "    Refresh Rate: %lf                         \n"
       "                                              \n"
       "***************************************************\n\n"
-	  , width, height);
+	  , width, height, int_hz);
 	  
 	  printf("%s",crt_debug_output);
    }
