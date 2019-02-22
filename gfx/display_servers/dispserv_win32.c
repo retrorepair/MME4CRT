@@ -226,20 +226,6 @@ static bool win32_display_server_set_resolution(void *data,
 
    if (!serv)
       return false;
-      
-   if (crt_debug_mode_active() == true)
-   {
-	  snprintf(crt_debug_output, sizeof(crt_debug_output),
-	  "\n\n************ CRTSwitchRes Debug output ************\n"
-	  "                                             \n"
-      "    CRT Resolution: %dx%d                     \n"
-      "    Refresh Rate: %lf                         \n"
-      "                                              \n"
-      "***************************************************\n\n"
-	  , width, height, int_hz);
-	  
-	  printf("%s",crt_debug_output);
-   }
 
    win32_get_video_output(&curDevmode, -1, sizeof(curDevmode));
 
@@ -305,6 +291,20 @@ static bool win32_display_server_set_resolution(void *data,
       default:
          break;
       }
+   }
+
+   if (crt_debug_mode_active() == true)
+   {
+	  snprintf(crt_debug_output, sizeof(crt_debug_output),
+	  "\n\n************ CRTSwitchRes Debug output ************\n"
+	  "                                             \n"
+      "    CRT Resolution: %dx%d                     \n"
+      "    Refresh Rate: %lf                         \n"
+      "                                              \n"
+      "***************************************************\n\n"
+	  , width, height, int_hz);
+	  
+	  printf("%s",crt_debug_output);
    }
 
    return true;
