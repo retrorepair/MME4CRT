@@ -21,7 +21,6 @@
 #include <windows.h>
 #include <ntverp.h>
 
-
 #ifndef COBJMACROS
 #define COBJMACROS
 #define COBJMACROS_DEFINED
@@ -77,7 +76,7 @@ static unsigned win32_orig_width          = 0;
 static unsigned win32_orig_height         = 0;
 static unsigned win32_orig_refresh        = 0;
 static int crt_center                     = 0;
-static unsigned crt_debug_output[800]     = {0};
+static char crt_debug_output[800]         = {0};
 
 static void* win32_display_server_init(void)
 {
