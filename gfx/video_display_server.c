@@ -93,7 +93,7 @@ bool video_display_server_set_window_decorations(bool on)
    return false;
 }
 
-bool video_display_server_set_resolution(unsigned width, unsigned height,
+bool video_display_server_set_resolution(unsigned width, unsigned core_width, unsigned height,
       int int_hz, float hz, int center, int monitor_index, int xoffset)
 {
    if (current_display_server && current_display_server->set_resolution)
