@@ -20,6 +20,7 @@
 #include <initguid.h>
 #include <windows.h>
 #include <ntverp.h>
+#include <stdio.h>
 
 #ifndef COBJMACROS
 #define COBJMACROS
