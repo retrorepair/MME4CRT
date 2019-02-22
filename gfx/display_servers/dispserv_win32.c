@@ -299,10 +299,10 @@ static bool win32_display_server_set_resolution(void *data,
 	  "\n\n************ CRTSwitchRes Debug output ************\n"
 	  "                                             \n"
       "    CRT Resolution: %dx%d                     \n"
-      "    Refresh Rate: %lf                         \n"
+      "    Refresh Rate: %d                         \n"
       "                                              \n"
       "***************************************************\n\n"
-	  , width, height, freq);
+	  , width, height, int_hz);
 	  
 	  printf("%s",crt_debug_output);
    }
