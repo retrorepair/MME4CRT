@@ -39,6 +39,7 @@
 #include "../common/win32_common.h"
 #include "../../verbosity.h"
 #include "../video_driver.h" /* needed to set refresh rate in set resolution */
+#include "../video_crt_switch.h" /* needed for CRTSwitchRes Debug Mode */
 
 #ifdef __ITaskbarList3_INTERFACE_DEFINED__
 #define HAS_TASKBAR_EXT
@@ -224,6 +225,20 @@ static bool win32_display_server_set_resolution(void *data,
 
    if (!serv)
       return false;
+      
+   if (crt_debug_mode_active() == true)
+   {
+	  snprintf(crt_debug_output, sizeof(crt_debug_output),
+	  "\n\n************ CRTSwitchRes Debug output ************\n"
+	  "                                             \n"
+      "    CRT Resolution: %dx%d                     \n"
+      "    Refresh Rate: %lf                         \n"
+      "                                              \n"
+      "***************************************************\n\n"
+	  , width, height);
+	  
+	  printf("%s",crt_debug_output);
+   }
 
    win32_get_video_output(&curDevmode, -1, sizeof(curDevmode));
 
