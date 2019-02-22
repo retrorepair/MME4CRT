@@ -126,9 +126,9 @@ static menu_display_ctx_driver_t *menu_display_ctx_drivers[] = {
 #endif
 #ifdef HAVE_OPENGL
    &menu_display_ctx_gl,
+#endif
 #ifdef HAVE_OPENGL1
    &menu_display_ctx_gl1,
-#endif
 #endif
 #ifdef HAVE_VULKAN
    &menu_display_ctx_vulkan,
@@ -1588,10 +1588,13 @@ void menu_display_draw_text(
 {
    struct font_params params;
 
+   if ((color & 0x000000FF) == 0)
+      return;
+
    /* Don't draw outside of the screen */
-   if (     ((x < -64 || x > width  + 64)
+   if (!draw_outside &&
+           ((x < -64 || x > width  + 64)
          || (y < -64 || y > height + 64))
-         && !draw_outside
       )
       return;
 
@@ -1952,9 +1955,6 @@ bool menu_driver_render(bool is_idle, bool rarch_is_inited,
 
    if (BIT64_GET(menu_driver_data->state, MENU_STATE_BLIT))
    {
-      settings_t *settings = config_get_ptr();
-      menu_animation_update_time(settings->bools.menu_timedate_enable);
-
       if (menu_driver_ctx->render)
          menu_driver_ctx->render(menu_userdata, is_idle);
    }
@@ -2696,7 +2696,18 @@ void hex32_to_rgba_normalized(uint32_t hex, float* rgba, float alpha)
 void menu_subsystem_populate(const struct retro_subsystem_info* subsystem, menu_displaylist_info_t *info)
 {
    settings_t *settings = config_get_ptr();
-   char star_char[8];
+   /* Note: Create this string here explicitly (rather than
+    * using a #define elsewhere) since we need to be aware of
+    * its length... */
+#if defined(__APPLE__)
+   /* UTF-8 support is currently broken on Apple devices... */
+   static const char utf8_star_char[] = "*";
+#else
+   /* <BLACK STAR>
+    * UCN equivalent: "\u2605" */
+   static const char utf8_star_char[] = "\xE2\x98\x85";
+#endif
+   char star_char[16];
    unsigned i = 0;
    int n = 0;
    bool is_rgui = string_is_equal(settings->arrays.menu_driver, "rgui");
@@ -2704,7 +2715,7 @@ void menu_subsystem_populate(const struct retro_subsystem_info* subsystem, menu_
    /* Select approriate 'star' marker for subsystem menu entries
     * (i.e. RGUI does not support unicode, so use a 'standard'
     * character fallback) */
-   snprintf(star_char, sizeof(star_char), "%s", is_rgui ? "*" : "\u2605");
+   snprintf(star_char, sizeof(star_char), "%s", is_rgui ? "*" : utf8_star_char);
    
    if (subsystem && subsystem_current_count > 0)
    {

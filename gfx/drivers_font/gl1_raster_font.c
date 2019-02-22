@@ -409,22 +409,13 @@ static void gl1_raster_font_render_message(
 static void gl1_raster_font_setup_viewport(unsigned width, unsigned height,
       gl1_raster_t *font, bool full_screen)
 {
-   video_shader_ctx_info_t shader_info;
-
    video_driver_set_viewport(width, height, full_screen, false);
 
    glEnable(GL_BLEND);
    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-   /*glBlendEquation(GL_FUNC_ADD);*/
 
    glEnable(GL_TEXTURE_2D);
    glBindTexture(GL_TEXTURE_2D, font->tex);
-
-   /*shader_info.data       = NULL;
-   shader_info.idx        = VIDEO_SHADER_STOCK_BLEND;
-   shader_info.set_active = true;
-
-   video_shader_driver_use(&shader_info);*/
 }
 
 static void gl1_raster_font_render_msg(
@@ -569,6 +560,17 @@ static void gl1_raster_font_bind_block(void *data, void *userdata)
       font->block = block;
 }
 
+
+static int gl1_get_line_height(void *data)
+{
+   gl1_raster_t *font = (gl1_raster_t*)data;
+
+   if (!font || !font->font_driver || !font->font_data)
+      return -1;
+
+   return font->font_driver->get_line_height(font->font_data);
+}
+
 font_renderer_t gl1_raster_font = {
    gl1_raster_font_init_font,
    gl1_raster_font_free_font,
@@ -577,5 +579,6 @@ font_renderer_t gl1_raster_font = {
    gl1_raster_font_get_glyph,
    gl1_raster_font_bind_block,
    gl1_raster_font_flush_block,
-   gl1_get_message_width
+   gl1_get_message_width,
+   gl1_get_line_height
 };

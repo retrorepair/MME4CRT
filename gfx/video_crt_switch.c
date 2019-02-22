@@ -309,25 +309,24 @@ void crt_video_restore(void)
 
 int crt_compute_dynamic_width(int width)
 {
-   int min_height    = 261;
-   int dynamic_width = 0;
+   unsigned i;
+   int dynamic_width   = 0;
+   unsigned min_height = 261;
+
 #if defined(HAVE_VIDEOCORE)
    p_clock             = 32000000;
 #else
    p_clock             = 15000000;
 #endif
 
-   for (int i =1; i < 11; i++)
-
-
-
+   for (i = 0; i < 10; i++)
    {
       dynamic_width = width*i;
       if ((dynamic_width * min_height * ra_core_hz) > p_clock)
          break;
 
    }
-  return dynamic_width;
+   return dynamic_width;
 }
 
 #if defined(HAVE_VIDEOCORE)
@@ -449,7 +448,7 @@ static void crt_rpi_switch(int width, int height, float hz)
 
    vc_vchi_gencmd_init(vchi_instance, &vchi_connection, 1);
 
-   vc_gencmd(buffer, sizeof (buffer), set_hdmi_timing);
+   vc_gencmd(buffer, sizeof(buffer), set_hdmi_timing);
 
    vc_gencmd_stop();
 

@@ -500,16 +500,23 @@ static bool netplay_poll(void)
          /* Stalled out! */
          if (netplay_data->is_server)
          {
+            bool fixed = false;
             for (i = 0; i < netplay_data->connections_size; i++)
             {
                struct netplay_connection *connection = &netplay_data->connections[i];
                if (connection->active &&
                    connection->mode == NETPLAY_CONNECTION_PLAYING &&
-                   connection->stall &&
-                   now - connection->stall_time >= MAX_SERVER_STALL_TIME_USEC)
+                   connection->stall)
                {
                   netplay_hangup(netplay_data, connection);
+                  fixed = true;
                }
+            }
+
+            if (fixed) {
+               /* Not stalled now :) */
+               netplay_data->stall = NETPLAY_STALL_NONE;
+               return true;
             }
          }
          else
@@ -894,12 +901,12 @@ static void netplay_announce(void)
 
    netplay_get_architecture(frontend_architecture, sizeof(frontend_architecture));
 
-   if (!string_is_empty(settings->paths.username))
-      net_http_urlencode(&username, settings->paths.username);
 #ifdef HAVE_DISCORD
-   else
+   if(discord_is_ready())
       net_http_urlencode(&username, discord_get_own_username());
+   else
 #endif
+   net_http_urlencode(&username, settings->paths.username);
    net_http_urlencode(&corename, system->library_name);
    net_http_urlencode(&coreversion, system->library_version);
    net_http_urlencode(&frontend_ident, frontend_architecture);
@@ -1509,7 +1516,7 @@ bool init_netplay(void *direct_host, const char *server, unsigned port)
          &cbs,
          settings->bools.netplay_nat_traversal,
 #ifdef HAVE_DISCORD
-         string_is_empty(settings->paths.username) ? discord_get_own_username() :
+         discord_get_own_username() ? discord_get_own_username() :
 #endif
          settings->paths.username,
          quirks);

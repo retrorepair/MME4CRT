@@ -39,6 +39,7 @@
 #include "../../dynamic.h"
 #include "../video_driver.h"
 #include "../../ui/ui_companion_driver.h"
+#include "../../frontend/frontend_driver.h"
 
 #ifdef HAVE_THREADS
 #include "../video_thread_wrapper.h"
@@ -54,6 +55,9 @@
 
 #ifdef HAVE_MENU
 #include "../../menu/menu_driver.h"
+#ifdef HAVE_MENU_WIDGETS
+#include "../../menu/widgets/menu_widgets.h"
+#endif
 #endif
 
 #include "../font_driver.h"
@@ -1562,23 +1566,27 @@ static void d3d9_get_overlay_interface(void *data,
 
 static void d3d9_update_title(video_frame_info_t *video_info)
 {
+   const settings_t *settings = config_get_ptr();
 #ifdef _XBOX
    const ui_window_t *window      = NULL;
 #else
    const ui_window_t *window      = ui_companion_driver_get_window_ptr();
 #endif
 
-   if (video_info->fps_show)
+   if (settings->bools.video_memory_show)
    {
-      MEMORYSTATUS stat;
-      char mem[128];
+#ifndef __WINRT__
+      uint64_t mem_bytes_used = frontend_driver_get_used_memory();
+      uint64_t mem_bytes_total = frontend_driver_get_total_memory();
+      char         mem[128];
 
       mem[0] = '\0';
 
-      GlobalMemoryStatus(&stat);
-      snprintf(mem, sizeof(mem), "|| MEM: %.2f/%.2fMB",
-            stat.dwAvailPhys/(1024.0f*1024.0f), stat.dwTotalPhys/(1024.0f*1024.0f));
+      snprintf(
+            mem, sizeof(mem), " || MEM: %.2f/%.2fMB", mem_bytes_used / (1024.0f * 1024.0f),
+            mem_bytes_total / (1024.0f * 1024.0f));
       strlcat(video_info->fps_text, mem, sizeof(video_info->fps_text));
+#endif
    }
 
 #ifndef _XBOX
@@ -1703,6 +1711,12 @@ static bool d3d9_frame(void *data, const void *frame,
       for (i = 0; i < d3d->overlays_size; i++)
          d3d9_overlay_render(d3d, video_info, &d3d->overlays[i], true);
    }
+#endif
+
+#ifdef HAVE_MENU
+#ifdef HAVE_MENU_WIDGETS
+   menu_widgets_frame(video_info);
+#endif
 #endif
 
    if (msg && *msg)
@@ -2067,6 +2081,14 @@ static bool d3d9_has_windowed(void *data)
 #endif
 }
 
+#if defined(HAVE_MENU) && defined(HAVE_MENU_WIDGETS)
+static bool d3d9_menu_widgets_enabled(void *data)
+{
+   (void)data;
+   return true;
+}
+#endif
+
 video_driver_t video_d3d9 = {
    d3d9_init,
    d3d9_frame,
@@ -2086,5 +2108,9 @@ video_driver_t video_d3d9 = {
 #ifdef HAVE_OVERLAY
    d3d9_get_overlay_interface,
 #endif
-   d3d9_get_poke_interface
+   d3d9_get_poke_interface,
+   NULL, /* wrap_type_to_enum */
+#if defined(HAVE_MENU) && defined(HAVE_MENU_WIDGETS)
+   d3d9_menu_widgets_enabled
+#endif
 };

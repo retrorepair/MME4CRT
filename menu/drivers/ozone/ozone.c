@@ -34,6 +34,7 @@
 #include <streams/file_stream.h>
 #include <features/features_cpu.h>
 #include <formats/image.h>
+#include <math/float_minmax.h>
 
 #include "../menu_generic.h"
 
@@ -482,7 +483,6 @@ static void ozone_context_reset(void *data, bool is_threaded)
       ozone_context_reset_horizontal_list(ozone);
 
       /* State reset */
-      ozone->frame_count                  = 0;
       ozone->fade_direction               = false;
       ozone->cursor_in_sidebar            = false;
       ozone->cursor_in_sidebar_old        = false;
@@ -848,8 +848,13 @@ static void ozone_draw_header(ozone_handle_t *ozone, video_frame_info_t *video_i
 {
    char title[255];
    menu_animation_ctx_ticker_t ticker;
+   static const char* const ticker_spacer = TICKER_SPACER;
    settings_t *settings     = config_get_ptr();
    unsigned timedate_offset = 0;
+
+   /* Initial ticker configuration */
+   ticker.type_enum = (enum menu_animation_ticker_type)settings->uints.menu_ticker_type;
+   ticker.spacer = ticker_spacer;
 
    /* Separator */
    menu_display_draw_quad(video_info, 30, ozone->dimensions.header_height, video_info->width - 60, 1, video_info->width, video_info->height, ozone->theme->header_footer_separator);
@@ -857,7 +862,7 @@ static void ozone_draw_header(ozone_handle_t *ozone, video_frame_info_t *video_i
    /* Title */
    ticker.s = title;
    ticker.len = (video_info->width - 128 - 47 - 130) / ozone->title_font_glyph_width;
-   ticker.idx = ozone->frame_count / 20;
+   ticker.idx = menu_animation_get_ticker_idx();
    ticker.str = ozone->title;
    ticker.selected = true;
 
@@ -1096,8 +1101,6 @@ static void ozone_frame(void *data, video_frame_info_t *video_info)
       last_use_preferred_system_color_theme = settings->bools.menu_use_preferred_system_color_theme;
    }
 
-   ozone->frame_count++;
-
    menu_display_set_viewport(video_info->width, video_info->height);
 
    /* Clear text */
@@ -1211,7 +1214,7 @@ static void ozone_frame(void *data, video_frame_info_t *video_info)
          menu_animation_push(&entry);
       }
 
-      ozone_draw_backdrop(video_info, fmin(ozone->animations.messagebox_alpha, 0.75f));
+      ozone_draw_backdrop(video_info, float_min(ozone->animations.messagebox_alpha, 0.75f));
 
       if (draw_osk)
       {
