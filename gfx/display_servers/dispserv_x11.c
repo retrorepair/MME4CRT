@@ -145,10 +145,7 @@ static bool x11_display_server_set_resolution(void *data,
    int hmax                 = 0;
    int vmax                 = 0;
    int pdefault             = 8;
-   int pwidth               = 0;
    int x_offset             = center;
-   float roundw             = 0.0f;
-   float roundh             = 0.0f;
    float pixel_clock        = 0;
 
    crt_en                   = true;
@@ -166,22 +163,6 @@ static bool x11_display_server_set_resolution(void *data,
    video_monitor_set_refresh_rate(hz);
 
    /* following code is the mode line generator */
-   pwidth = width;
-
-   if (height < 400 && width > 400)
-      pwidth = width / 2;
-
-   roundw = roundf((float)pwidth / (float)height * 100) / 100;
-
-   if (height > width)
-      roundw = roundf((float)height / (float)width * 100) / 100;
-
-   if (roundw > 1.35)
-      roundw = 1.25;
-
-   if (roundw < 1.20)
-      roundw = 1.34;
-
    if (width < 700)
    {
       hfp    = width * 1.033;
