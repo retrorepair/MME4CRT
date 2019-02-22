@@ -273,6 +273,7 @@ static const float default_input_overlay_opacity = 0.7f;
 
 #ifdef HAVE_MENU
 #include "menu/menu_driver.h"
+#include "menu/menu_animation.h"
 
 static bool default_block_config_read    = true;
 
@@ -323,6 +324,9 @@ static bool menu_show_core_updater       = false;
 static bool menu_show_core_updater       = true;
 #endif
 static bool menu_show_sublabels          = false;
+
+static unsigned menu_ticker_type         = TICKER_TYPE_BOUNCE;
+static float menu_ticker_speed           = 1.0f;
 
 static bool content_show_settings    = true;
 static bool content_show_favorites   = true;
@@ -379,6 +383,8 @@ static unsigned rgui_color_theme          = RGUI_THEME_CLASSIC_GREEN;
 static unsigned rgui_thumbnail_downscaler = RGUI_THUMB_SCALE_POINT;
 
 static bool rgui_lock_aspect = false;
+
+static unsigned rgui_internal_upscale_level = RGUI_UPSCALE_NONE;
 
 #else
 static bool default_block_config_read = false;
@@ -578,6 +584,9 @@ static const bool framecount_show = false;
 /* Includes displaying the current memory usage/total with FPS/Frames. */
 static const bool memory_show = false;
 
+/* Enables displaying various timing statistics. */
+static const bool statistics_show = false;
+
 /* Enables use of rewind. This will incur some memory footprint
  * depending on the save state buffer. */
 static const bool rewind_enable = false;
@@ -696,8 +705,16 @@ static const uint16_t network_remote_base_port = 55400;
 /* Number of entries that will be kept in content history playlist file. */
 static const unsigned default_content_history_size = 100;
 
+/* Sort all playlists (apart from histories) alphabetically */
+static const bool playlist_sort_alphabetical = true;
+
 /* File format to use when writing playlists to disk */
 static const bool playlist_use_old_format = false;
+
+/* Always show currently associated core next to each playlist entry */
+static const bool playlist_show_core_name = false;
+
+static const bool playlist_show_sublabels = false;
 
 /* Show Menu start-up screen on boot. */
 static const bool default_menu_show_start_screen = true;
@@ -749,7 +766,7 @@ static const unsigned input_poll_type_behavior = 2;
 
 static const unsigned input_bind_timeout = 5;
 
-static const unsigned input_bind_hold = 2;
+static const unsigned input_bind_hold = 1;
 
 static const unsigned menu_thumbnails_default = 3;
 

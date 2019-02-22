@@ -2719,17 +2719,17 @@ static bool gl2_frame(void *data, const void *frame,
 #endif
 #endif
 
+#ifdef HAVE_OVERLAY
+   if (gl->overlay_enable)
+      gl2_render_overlay(gl, video_info);
+#endif
+
    if (!string_is_empty(msg))
    {
       if (video_info->msg_bgcolor_enable)
          gl2_render_osd_background(gl, video_info, msg);
       font_driver_render_msg(video_info, NULL, msg, NULL);
    }
-
-#ifdef HAVE_OVERLAY
-   if (gl->overlay_enable)
-      gl2_render_overlay(gl, video_info);
-#endif
 
    video_info->cb_update_window_title(
          video_info->context_data, video_info);
@@ -3329,7 +3329,11 @@ static void *gl2_init(const video_info_t *video,
 #ifdef _WIN32
    if (string_is_equal(vendor, "Microsoft Corporation"))
       if (string_is_equal(renderer, "GDI Generic"))
+#ifdef HAVE_OPENGL1
+         rarch_force_video_driver_fallback("gl1");
+#else
          rarch_force_video_driver_fallback("gdi");
+#endif
 #endif
 
    hwr = video_driver_get_hw_context();

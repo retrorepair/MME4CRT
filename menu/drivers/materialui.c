@@ -167,8 +167,6 @@ typedef struct materialui_handle
    float textures_arrow_alpha;
    float categories_x_pos;
 
-   uint64_t frame_count;
-
    char *box_message;
 
    char menu_title[255];
@@ -739,6 +737,7 @@ static void materialui_render_label_value(
 {
    menu_entry_t entry;
    menu_animation_ctx_ticker_t ticker;
+   static const char ticker_spacer[] = "   |   ";
    char label_str[255];
    char value_str[255];
    char *sublabel_str              = NULL;
@@ -752,6 +751,11 @@ static void materialui_render_label_value(
    int icon_margin                 = 0;
    enum msg_file_type hash_type    = msg_hash_to_file_type(msg_hash_calculate(value));
    float scale_factor              = menu_display_get_dpi();
+   settings_t *settings            = config_get_ptr();
+
+   /* Initial ticker configuration */
+   ticker.type_enum = (enum menu_animation_ticker_type)settings->uints.menu_ticker_type;
+   ticker.spacer = ticker_spacer;
 
    label_str[0] = value_str[0]     = '\0';
 
@@ -930,7 +934,6 @@ static void materialui_render_menu_list(
    float sum                               = 0;
    size_t entries_end                      = 0;
    file_list_t *list                       = NULL;
-   uint64_t frame_count                    = mui->frame_count;
    unsigned header_height                  =
       menu_display_get_header_height();
 
@@ -981,7 +984,7 @@ static void materialui_render_menu_list(
             y,
             width,
             height,
-            frame_count / 20,
+            menu_animation_get_ticker_idx(),
             font_hover_color,
             entry_selected,
             rich_label,
@@ -1063,6 +1066,7 @@ static void materialui_frame(void *data, video_frame_info_t *video_info)
    menu_display_ctx_clearcolor_t clearcolor;
 
    menu_animation_ctx_ticker_t ticker;
+   static const char ticker_spacer[] = "   |   ";
    menu_display_ctx_draw_t draw;
    char msg[255];
    char title_buf[255];
@@ -1160,14 +1164,17 @@ static void materialui_frame(void *data, video_frame_info_t *video_info)
    bool background_rendered        = false;
    bool libretro_running           = video_info->libretro_running;
 
+   settings_t *settings            = config_get_ptr();
    materialui_handle_t *mui        = (materialui_handle_t*)data;
 
    if (!mui)
       return;
 
-   usable_width                    = width - (mui->margin * 2);
+   /* Initial ticker configuration */
+   ticker.type_enum = (enum menu_animation_ticker_type)settings->uints.menu_ticker_type;
+   ticker.spacer = ticker_spacer;
 
-   mui->frame_count++;
+   usable_width                    = width - (mui->margin * 2);
 
    msg[0] = title_buf[0] = title_msg[0] = '\0';
 
@@ -1520,7 +1527,7 @@ static void materialui_frame(void *data, video_frame_info_t *video_info)
 
    ticker.s        = title_buf;
    ticker.len      = ticker_limit;
-   ticker.idx      = mui->frame_count / 100;
+   ticker.idx      = menu_animation_get_ticker_slow_idx();
    ticker.str      = mui->menu_title;
    ticker.selected = true;
 
@@ -1542,7 +1549,7 @@ static void materialui_frame(void *data, video_frame_info_t *video_info)
 
       ticker.s        = title_buf_msg_tmp;
       ticker.len      = ticker_limit;
-      ticker.idx      = mui->frame_count / 20;
+      ticker.idx      = menu_animation_get_ticker_idx();
       ticker.str      = title_buf_msg;
       ticker.selected = true;
 
@@ -1798,7 +1805,7 @@ static void materialui_navigation_set(void *data, bool scroll)
    if (!mui || !scroll)
       return;
 
-   entry.duration     = 10;
+   entry.duration     = 166;
    entry.target_value = scroll_pos;
    entry.subject      = &mui->scroll_y;
    entry.easing_enum  = EASING_IN_OUT_QUAD;

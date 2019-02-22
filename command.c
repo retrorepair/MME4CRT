@@ -371,7 +371,7 @@ static bool command_write_ram(const char *arg)
 }
 #endif
 
-#ifdef HAVE_COMMAND
+#if defined(HAVE_NETWORKING) && defined(HAVE_NETWORK_CMD) && defined(HAVE_COMMAND)
 static bool command_get_arg(const char *tok,
       const char **arg, unsigned *index)
 {
@@ -412,9 +412,7 @@ static bool command_get_arg(const char *tok,
 
    return false;
 }
-#endif
 
-#if defined(HAVE_NETWORKING) && defined(HAVE_NETWORK_CMD) && defined(HAVE_COMMAND)
 static bool command_network_init(command_t *handle, uint16_t port)
 {
    struct addrinfo *res  = NULL;
@@ -467,7 +465,6 @@ static bool command_verify(const char *cmd)
    return false;
 }
 
-#ifdef HAVE_COMMAND
 static void command_parse_sub_msg(command_t *handle, const char *tok)
 {
    const char *arg = NULL;
@@ -544,7 +541,6 @@ static void command_network_poll(command_t *handle)
       command_parse_msg(handle, buf, CMD_NETWORK);
    }
 }
-#endif
 #endif
 
 bool command_network_send(const char *cmd_)
@@ -1447,16 +1443,18 @@ static bool command_event_save_config(
       const char *config_path,
       char *s, size_t len)
 {
+   char log[PATH_MAX_LENGTH];
    bool path_exists = !string_is_empty(config_path);
    const char *str  = path_exists ? config_path :
       path_get(RARCH_PATH_CONFIG);
 
    if (path_exists && config_save_file(config_path))
    {
-      snprintf(s, len, "[Config]: %s \"%s\".",
+      snprintf(s, len, "%s \"%s\".",
             msg_hash_to_str(MSG_SAVED_NEW_CONFIG_TO),
             config_path);
-      RARCH_LOG("%s\n", s);
+      snprintf(log, PATH_MAX_LENGTH, "[config] %s", s);
+      RARCH_LOG("%s\n", log);
       return true;
    }
 
@@ -1465,7 +1463,8 @@ static bool command_event_save_config(
       snprintf(s, len, "%s \"%s\".",
             msg_hash_to_str(MSG_FAILED_SAVING_CONFIG_TO),
             str);
-      RARCH_ERR("%s\n", s);
+      snprintf(log, PATH_MAX_LENGTH, "[config] %s", s);
+      RARCH_ERR("%s\n", log);
    }
 
    return false;
@@ -1506,7 +1505,7 @@ static bool command_event_save_core_config(void)
    if (string_is_empty(config_dir))
    {
       runloop_msg_queue_push(msg_hash_to_str(MSG_CONFIG_DIRECTORY_NOT_SET), 1, 180, true, NULL, MESSAGE_QUEUE_ICON_DEFAULT, MESSAGE_QUEUE_CATEGORY_INFO);
-      RARCH_ERR("[Config]: %s\n", msg_hash_to_str(MSG_CONFIG_DIRECTORY_NOT_SET));
+      RARCH_ERR("[config] %s\n", msg_hash_to_str(MSG_CONFIG_DIRECTORY_NOT_SET));
       free (config_dir);
       return false;
    }
@@ -1557,7 +1556,7 @@ static bool command_event_save_core_config(void)
    if (!found_path)
    {
       /* Fallback to system time... */
-      RARCH_WARN("[Config]: %s\n",
+      RARCH_WARN("[config] %s\n",
             msg_hash_to_str(MSG_CANNOT_INFER_NEW_CONFIG_PATH));
       fill_dated_filename(config_name,
             file_path_str(FILE_PATH_CONFIG_EXTENSION),
@@ -1607,7 +1606,7 @@ static void command_event_save_current_config(enum override_type type)
    {
       case OVERRIDE_NONE:
          if (path_is_empty(RARCH_PATH_CONFIG))
-            strlcpy(msg, "[Config]: Config directory not set, cannot save configuration.",
+            strlcpy(msg, "[config] Config directory not set, cannot save configuration.",
                   sizeof(msg));
          else
             command_event_save_config(path_get(RARCH_PATH_CONFIG), msg, sizeof(msg));
@@ -1618,7 +1617,7 @@ static void command_event_save_current_config(enum override_type type)
          if (config_save_overrides(type))
          {
             strlcpy(msg, msg_hash_to_str(MSG_OVERRIDES_SAVED_SUCCESSFULLY), sizeof(msg));
-            RARCH_LOG("[Config]: [overrides] %s\n", msg);
+            RARCH_LOG("[config] [overrides] %s\n", msg);
 
             /* set overrides to active so the original config can be
                restored after closing content */
@@ -1627,7 +1626,7 @@ static void command_event_save_current_config(enum override_type type)
          else
          {
             strlcpy(msg, msg_hash_to_str(MSG_OVERRIDES_ERROR_SAVING), sizeof(msg));
-            RARCH_ERR("[Config]: [overrides] %s\n", msg);
+            RARCH_ERR("[config] [overrides] %s\n", msg);
          }
          break;
    }
@@ -1961,6 +1960,7 @@ bool command_event(enum event_command cmd, void *data)
 
             content_get_status(&contentless, &is_inited);
 
+            rarch_ctl(RARCH_CTL_CONTENT_RUNTIME_LOG_DEINIT, NULL);
             command_event(CMD_EVENT_AUTOSAVE_STATE, NULL);
             command_event(CMD_EVENT_DISABLE_OVERRIDES, NULL);
             command_event(CMD_EVENT_RESTORE_DEFAULT_SHADER_PRESET, NULL);
@@ -2145,6 +2145,12 @@ TODO: Add a setting for these tweaks */
          break;
       case CMD_EVENT_OVERLAY_INIT:
          {
+#if defined(GEKKO)
+            /* Avoid a crash at startup or even when toggling overlay in rgui */
+						uint64_t memory_used       = frontend_driver_get_used_memory();
+						if(memory_used > (72 * 1024 * 1024))
+							break;
+#endif
             settings_t *settings      = config_get_ptr();
             command_event(CMD_EVENT_OVERLAY_DEINIT, NULL);
 #ifdef HAVE_OVERLAY
@@ -2502,6 +2508,9 @@ TODO: Add a setting for these tweaks */
             bool is_idle              = false;
             bool is_slowmotion        = false;
             bool is_perfcnt_enable    = false;
+#ifdef HAVE_DISCORD
+            discord_userdata_t userdata;
+#endif
 
             runloop_get_status(&is_paused, &is_idle, &is_slowmotion,
                   &is_perfcnt_enable);
@@ -2519,9 +2528,7 @@ TODO: Add a setting for these tweaks */
                   video_driver_cached_frame();
 
 #ifdef HAVE_DISCORD
-               discord_userdata_t userdata;
                userdata.status = DISCORD_PRESENCE_GAME_PAUSED;
-
                command_event(CMD_EVENT_DISCORD_UPDATE, &userdata);
 #endif
             }

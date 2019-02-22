@@ -308,6 +308,10 @@ typedef struct settings
       bool sustained_performance_mode;
       bool playlist_use_old_format;
       bool content_runtime_log;
+
+      bool playlist_show_core_name;
+      bool playlist_sort_alphabetical;
+      bool playlist_show_sublabels;
    } bools;
 
    struct
@@ -329,6 +333,7 @@ typedef struct settings
       float menu_framebuffer_opacity;
       float menu_footer_opacity;
       float menu_header_opacity;
+      float menu_ticker_speed;
 
       float audio_max_timing_skew;
       float audio_volume; /* dB scale. */
@@ -400,6 +405,7 @@ typedef struct settings
       unsigned video_viwidth;
       unsigned video_aspect_ratio_idx;
       unsigned video_rotation;
+      unsigned screen_orientation;
       unsigned video_msg_bgcolor_red;
       unsigned video_msg_bgcolor_green;
       unsigned video_msg_bgcolor_blue;
@@ -426,6 +432,8 @@ typedef struct settings
       unsigned menu_font_color_red;
       unsigned menu_font_color_green;
       unsigned menu_font_color_blue;
+      unsigned menu_rgui_internal_upscale_level;
+      unsigned menu_ticker_type;
 
       unsigned camera_width;
       unsigned camera_height;

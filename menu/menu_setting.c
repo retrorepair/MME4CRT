@@ -71,7 +71,6 @@
 #include "../paths.h"
 #include "../dynamic.h"
 #include "../list_special.h"
-#include "../verbosity.h"
 #include "../camera/camera_driver.h"
 #include "../wifi/wifi_driver.h"
 #include "../location/location_driver.h"
@@ -88,6 +87,7 @@
 #include "../retroarch.h"
 #include "../gfx/video_display_server.h"
 #include "../managers/cheat_manager.h"
+#include "../verbosity.h"
 
 #include "../tasks/tasks_internal.h"
 
@@ -814,6 +814,102 @@ static void setting_get_string_representation_uint_rgui_thumbnail_scaler(
          strlcpy(s,
                msg_hash_to_str(
                   MENU_ENUM_LABEL_VALUE_RGUI_THUMB_SCALE_SINC),
+               len);
+         break;
+   }
+}
+
+static void setting_get_string_representation_uint_rgui_internal_upscale_level(
+      rarch_setting_t *setting,
+      char *s, size_t len)
+{
+   if (!setting)
+      return;
+
+   switch (*setting->value.target.unsigned_integer)
+   {
+      case RGUI_UPSCALE_NONE:
+         strlcpy(s,
+               msg_hash_to_str(
+                  MENU_ENUM_LABEL_VALUE_RGUI_UPSCALE_NONE),
+               len);
+         break;
+      case RGUI_UPSCALE_AUTO:
+         strlcpy(s,
+               msg_hash_to_str(
+                  MENU_ENUM_LABEL_VALUE_RGUI_UPSCALE_AUTO),
+               len);
+         break;
+      case RGUI_UPSCALE_X2:
+         strlcpy(s,
+               msg_hash_to_str(
+                  MENU_ENUM_LABEL_VALUE_RGUI_UPSCALE_X2),
+               len);
+         break;
+      case RGUI_UPSCALE_X3:
+         strlcpy(s,
+               msg_hash_to_str(
+                  MENU_ENUM_LABEL_VALUE_RGUI_UPSCALE_X3),
+               len);
+         break;
+      case RGUI_UPSCALE_X4:
+         strlcpy(s,
+               msg_hash_to_str(
+                  MENU_ENUM_LABEL_VALUE_RGUI_UPSCALE_X4),
+               len);
+         break;
+      case RGUI_UPSCALE_X5:
+         strlcpy(s,
+               msg_hash_to_str(
+                  MENU_ENUM_LABEL_VALUE_RGUI_UPSCALE_X5),
+               len);
+         break;
+      case RGUI_UPSCALE_X6:
+         strlcpy(s,
+               msg_hash_to_str(
+                  MENU_ENUM_LABEL_VALUE_RGUI_UPSCALE_X6),
+               len);
+         break;
+      case RGUI_UPSCALE_X7:
+         strlcpy(s,
+               msg_hash_to_str(
+                  MENU_ENUM_LABEL_VALUE_RGUI_UPSCALE_X7),
+               len);
+         break;
+      case RGUI_UPSCALE_X8:
+         strlcpy(s,
+               msg_hash_to_str(
+                  MENU_ENUM_LABEL_VALUE_RGUI_UPSCALE_X8),
+               len);
+         break;
+      case RGUI_UPSCALE_X9:
+         strlcpy(s,
+               msg_hash_to_str(
+                  MENU_ENUM_LABEL_VALUE_RGUI_UPSCALE_X9),
+               len);
+         break;
+   }
+}
+
+static void setting_get_string_representation_uint_menu_ticker_type(
+      rarch_setting_t *setting,
+      char *s, size_t len)
+{
+   if (!setting)
+      return;
+
+   switch (*setting->value.target.unsigned_integer)
+   {
+      case TICKER_TYPE_BOUNCE:
+         strlcpy(s,
+               msg_hash_to_str(
+                  MENU_ENUM_LABEL_VALUE_MENU_TICKER_TYPE_BOUNCE),
+               len);
+         break;
+      case TICKER_TYPE_LOOP:
+         strlcpy(s,
+               msg_hash_to_str(
+                  MENU_ENUM_LABEL_VALUE_MENU_TICKER_TYPE_LOOP),
                len);
          break;
    }
@@ -1869,6 +1965,24 @@ static void setting_get_string_representation_uint_cheat_browse_address(rarch_se
 }
 
 static void setting_get_string_representation_uint_video_rotation(rarch_setting_t *setting,
+      char *s, size_t len)
+{
+   if (setting)
+   {
+      char rotation_lut[4][32] =
+      {
+         "Normal",
+         "90 deg",
+         "180 deg",
+         "270 deg"
+      };
+
+      strlcpy(s, rotation_lut[*setting->value.target.unsigned_integer],
+            len);
+   }
+}
+
+static void setting_get_string_representation_uint_screen_orientation(rarch_setting_t *setting,
       char *s, size_t len)
 {
    if (setting)
@@ -3097,6 +3211,15 @@ void general_write_handler(rarch_setting_t *setting)
                video_driver_set_rotation(
                      (*setting->value.target.unsigned_integer +
                       system->rotation) % 4);
+         }
+         break;
+      case MENU_ENUM_LABEL_SCREEN_ORIENTATION:
+         {
+#ifndef ANDROID
+             /* FIXME: Changing at runtime on Android causes setting to somehow be incremented again, many times */
+             video_display_server_set_screen_orientation(
+                   (enum rotation)(*setting->value.target.unsigned_integer));
+#endif
          }
          break;
       case MENU_ENUM_LABEL_AUDIO_VOLUME:
@@ -5408,7 +5531,7 @@ static bool setting_append_list(
                   &settings->bools.video_statistics_show,
                   MENU_ENUM_LABEL_STATISTICS_SHOW,
                   MENU_ENUM_LABEL_VALUE_STATISTICS_SHOW,
-                  fps_show,
+                  statistics_show,
                   MENU_ENUM_LABEL_VALUE_OFF,
                   MENU_ENUM_LABEL_VALUE_ON,
                   &group_info,
@@ -5423,7 +5546,7 @@ static bool setting_append_list(
                &settings->bools.video_framecount_show,
                MENU_ENUM_LABEL_FRAMECOUNT_SHOW,
                MENU_ENUM_LABEL_VALUE_FRAMECOUNT_SHOW,
-               fps_show,
+               framecount_show,
                MENU_ENUM_LABEL_VALUE_OFF,
                MENU_ENUM_LABEL_VALUE_ON,
                &group_info,
@@ -5927,6 +6050,23 @@ static bool setting_append_list(
             (*list)[list_info->index - 1].action_ok = &setting_action_ok_uint;
             (*list)[list_info->index - 1].get_string_representation =
                &setting_get_string_representation_uint_video_rotation;
+            settings_data_list_current_add_flags(list, list_info, SD_FLAG_ADVANCED);
+
+            CONFIG_UINT(
+                  list, list_info,
+                  &settings->uints.screen_orientation,
+                  MENU_ENUM_LABEL_SCREEN_ORIENTATION,
+                  MENU_ENUM_LABEL_VALUE_SCREEN_ORIENTATION,
+                  0,
+                  &group_info,
+                  &subgroup_info,
+                  parent_group,
+                  general_write_handler,
+                  general_read_handler);
+            menu_settings_list_current_add_range(list, list_info, 0, 3, 1, true, true);
+            (*list)[list_info->index - 1].action_ok = &setting_action_ok_uint;
+            (*list)[list_info->index - 1].get_string_representation =
+               &setting_get_string_representation_uint_screen_orientation;
             settings_data_list_current_add_flags(list, list_info, SD_FLAG_ADVANCED);
 
             END_SUB_GROUP(list, list_info, parent_group);
@@ -8002,6 +8142,7 @@ static bool setting_append_list(
                   );
 
             if (video_driver_get_all_flags(&flags, GFX_CTX_FLAGS_MENU_FRAME_FILTERING))
+            {
                CONFIG_BOOL(
                      list, list_info,
                      &settings->bools.menu_linear_filter,
@@ -8017,6 +8158,24 @@ static bool setting_append_list(
                      general_read_handler,
                      SD_FLAG_NONE
                      );
+
+               CONFIG_UINT(
+                     list, list_info,
+                     &settings->uints.menu_rgui_internal_upscale_level,
+                     MENU_ENUM_LABEL_MENU_RGUI_INTERNAL_UPSCALE_LEVEL,
+                     MENU_ENUM_LABEL_VALUE_MENU_RGUI_INTERNAL_UPSCALE_LEVEL,
+                     rgui_internal_upscale_level,
+                     &group_info,
+                     &subgroup_info,
+                     parent_group,
+                     general_write_handler,
+                     general_read_handler);
+                  (*list)[list_info->index - 1].action_ok = &setting_action_ok_uint;
+                  (*list)[list_info->index - 1].get_string_representation =
+                     &setting_get_string_representation_uint_rgui_internal_upscale_level;
+               menu_settings_list_current_add_range(list, list_info, 0, RGUI_UPSCALE_LAST-1, 1, true, true);
+               settings_data_list_current_add_flags(list, list_info, SD_FLAG_ADVANCED);
+            }
 
             CONFIG_BOOL(
                   list, list_info,
@@ -8089,6 +8248,37 @@ static bool setting_append_list(
             (*list)[list_info->index - 1].action_start  = NULL;
 #endif
          }
+
+         CONFIG_UINT(
+               list, list_info,
+               &settings->uints.menu_ticker_type,
+               MENU_ENUM_LABEL_MENU_TICKER_TYPE,
+               MENU_ENUM_LABEL_VALUE_MENU_TICKER_TYPE,
+               menu_ticker_type,
+               &group_info,
+               &subgroup_info,
+               parent_group,
+               general_write_handler,
+               general_read_handler);
+            (*list)[list_info->index - 1].action_ok = &setting_action_ok_uint;
+            (*list)[list_info->index - 1].get_string_representation =
+               &setting_get_string_representation_uint_menu_ticker_type;
+         menu_settings_list_current_add_range(list, list_info, 0, TICKER_TYPE_LAST-1, 1, true, true);
+
+         CONFIG_FLOAT(
+               list, list_info,
+               &settings->floats.menu_ticker_speed,
+               MENU_ENUM_LABEL_MENU_TICKER_SPEED,
+               MENU_ENUM_LABEL_VALUE_MENU_TICKER_SPEED,
+               menu_ticker_speed,
+               "%.1fx",
+               &group_info,
+               &subgroup_info,
+               parent_group,
+               general_write_handler,
+               general_read_handler);
+         (*list)[list_info->index - 1].action_ok = &setting_action_ok_uint;
+         menu_settings_list_current_add_range(list, list_info, 0.1, 10.0, 0.1, true, true);
 
          END_SUB_GROUP(list, list_info, parent_group);
 
@@ -9633,10 +9823,58 @@ static bool setting_append_list(
 
          CONFIG_BOOL(
                list, list_info,
+               &settings->bools.playlist_sort_alphabetical,
+               MENU_ENUM_LABEL_PLAYLIST_SORT_ALPHABETICAL,
+               MENU_ENUM_LABEL_VALUE_PLAYLIST_SORT_ALPHABETICAL,
+               playlist_sort_alphabetical,
+               MENU_ENUM_LABEL_VALUE_OFF,
+               MENU_ENUM_LABEL_VALUE_ON,
+               &group_info,
+               &subgroup_info,
+               parent_group,
+               general_write_handler,
+               general_read_handler,
+               SD_FLAG_NONE
+               );
+
+         CONFIG_BOOL(
+               list, list_info,
                &settings->bools.playlist_use_old_format,
                MENU_ENUM_LABEL_PLAYLIST_USE_OLD_FORMAT,
                MENU_ENUM_LABEL_VALUE_PLAYLIST_USE_OLD_FORMAT,
                playlist_use_old_format,
+               MENU_ENUM_LABEL_VALUE_OFF,
+               MENU_ENUM_LABEL_VALUE_ON,
+               &group_info,
+               &subgroup_info,
+               parent_group,
+               general_write_handler,
+               general_read_handler,
+               SD_FLAG_NONE
+               );
+
+         CONFIG_BOOL(
+               list, list_info,
+               &settings->bools.playlist_show_sublabels,
+               MENU_ENUM_LABEL_PLAYLIST_SHOW_SUBLABELS,
+               MENU_ENUM_LABEL_VALUE_PLAYLIST_SHOW_SUBLABELS,
+               playlist_show_sublabels,
+               MENU_ENUM_LABEL_VALUE_OFF,
+               MENU_ENUM_LABEL_VALUE_ON,
+               &group_info,
+               &subgroup_info,
+               parent_group,
+               general_write_handler,
+               general_read_handler,
+               SD_FLAG_NONE
+               );
+
+         CONFIG_BOOL(
+               list, list_info,
+               &settings->bools.playlist_show_core_name,
+               MENU_ENUM_LABEL_PLAYLIST_SHOW_CORE_NAME,
+               MENU_ENUM_LABEL_VALUE_PLAYLIST_SHOW_CORE_NAME,
+               playlist_show_core_name,
                MENU_ENUM_LABEL_VALUE_OFF,
                MENU_ENUM_LABEL_VALUE_ON,
                &group_info,
