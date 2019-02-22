@@ -309,14 +309,13 @@ void crt_video_restore(void)
 
 int crt_compute_dynamic_width(int width)
 {
-   p_clock    = 15000000;
-
    int min_height    = 261;
    int dynamic_width = 0;
-   #if defined(HAVE_VIDEOCORE)
-      p_clock = 32000000;
-   #endif
-
+#if defined(HAVE_VIDEOCORE)
+   p_clock             = 32000000;
+#else
+   p_clock             = 15000000;
+#endif
 
    for (int i =1; i < 11; i++)
 
