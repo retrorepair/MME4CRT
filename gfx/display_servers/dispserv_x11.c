@@ -38,7 +38,7 @@
 
 static unsigned orig_width      = 0;
 static unsigned orig_height     = 0;
-static char old_mode[500]       = {0};
+static char old_mode[250]       = {0};
 static char orig_output[250]    = {0};
 static char new_mode[250]       = {0};
 static char xrandr[250]         = {0};
@@ -85,7 +85,7 @@ static void x11_display_server_destroy(void *data)
       system(output);
 
       snprintf(output, sizeof(output),
-            "xrandr --delmode %s %s",orig_output, old_mode);
+            "xrandr --delmode %s %.s",orig_output, old_mode);
       system(output);
 
       snprintf(output, sizeof(output), "xrandr --rmmode %s", old_mode);
@@ -155,6 +155,9 @@ static bool x11_display_server_set_resolution(void *data,
    crt_name_id += 1;
    snprintf(crt_name, sizeof(crt_name), "CRT%d", crt_name_id);
 
+
+   snprintf(old_mode, sizeof(old_mode), "%s", new_mode);
+
    dsp                      = XOpenDisplay(NULL);
    screen                   = DefaultScreen ( dsp );
    window                   = RootWindow ( dsp, screen );
@@ -181,15 +184,15 @@ static bool x11_display_server_set_resolution(void *data,
 
    if (width < 700)
    {
-      hfp    = width * 1.055;
-      hbp  = width * roundw - 8;
+      hfp    = width * 1.033;
+      hbp  = (width * 1.225);
    }else {
-      hfp  = (width * 1.055) + (width / 40);
-      hbp  = (width * roundw) + (width /24);
+      hfp  = (width * 1.033) + (width / 40);
+      hbp  = (width * 1.225) + (width /24);
       xoffset = xoffset*2;
    }
    
-   hsp    = (width * 1.140) - (xoffset*4);
+   hsp    = (width * 1.117) - (xoffset*4);
 
    hmax = hbp;
 
@@ -317,7 +320,6 @@ static bool x11_display_server_set_resolution(void *data,
 
     }
  }
-   snprintf(old_mode, sizeof(old_mode), "%s", new_mode);
    return true;
 }
 
