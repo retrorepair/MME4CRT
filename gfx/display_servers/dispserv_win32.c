@@ -76,6 +76,7 @@ static unsigned win32_orig_width          = 0;
 static unsigned win32_orig_height         = 0;
 static unsigned win32_orig_refresh        = 0;
 static int crt_center                     = 0;
+static unsigned crt_debug_output[800      = 0;]
 
 static void* win32_display_server_init(void)
 {
@@ -215,7 +216,7 @@ static bool win32_display_server_set_window_decorations(void *data, bool on)
 }
 
 static bool win32_display_server_set_resolution(void *data,
-      unsigned width, unsigned height, int int_hz, float hz, int center, int monitor_index, int xoffset)
+      unsigned width, unsigned core_width, unsigned height, int int_hz, float hz, int center, int monitor_index, int xoffset)
 {
    DEVMODE curDevmode;
    int iModeNum;

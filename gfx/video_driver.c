@@ -140,6 +140,7 @@ static rarch_softfilter_t *video_driver_state_filter     = NULL;
 static void               *video_driver_state_buffer     = NULL;
 static unsigned            video_driver_state_scale      = 0;
 static unsigned            video_driver_state_out_bpp    = 0;
+static unsigned            crt_switch_width              = 0;
 static bool                video_driver_state_out_rgb32      = false;
 static bool                video_driver_crt_switching_active = false;
 static bool                video_driver_crt_dynamic_super_width = false;
@@ -2648,18 +2649,18 @@ void video_driver_frame(const void *data, unsigned width,
       video_driver_crt_switching_active = true;
 
       if (video_info.crt_switch_resolution_super == 2560)
-         width = 2560;
+         crt_switch_width = 2560;
       if (video_info.crt_switch_resolution_super == 3840)
-         width = 3840;
+         crt_switch_width = 3840;
       if (video_info.crt_switch_resolution_super == 1920)
-         width = 1920;
+         crt_switch_width = 1920;
       
       if (video_info.crt_switch_resolution_super == 1)
          video_driver_crt_dynamic_super_width = true;
       else 
          video_driver_crt_dynamic_super_width = false;
       
-      crt_switch_res_core(width, height, video_driver_core_hz, 
+      crt_switch_res_core(crt_switch_width, width, width, height, video_driver_core_hz, 
          video_info.crt_switch_resolution, video_info.crt_switch_center_adjust, 
             video_info.monitor_index, video_driver_crt_dynamic_super_width, 
                video_info.crt_debug_mode);
