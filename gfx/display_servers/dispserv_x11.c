@@ -252,7 +252,7 @@ static bool x11_display_server_set_resolution(void *data,
    crt_rrmode.nameLength = sizeof(new_mode);
    crt_rrmode.modeFlags = 0;
 
-   res = XRRGetScreenResources (dsp, window);
+   res = XRRGetScreenResources ( g_x11_dpy, window);
 
    if (monitor_index == 0)
    {
