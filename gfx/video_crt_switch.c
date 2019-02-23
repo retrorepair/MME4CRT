@@ -120,20 +120,6 @@ static void switch_res_crt(unsigned width, unsigned height)
 #endif
    video_driver_apply_state_changes();
    
-   if (crt_debug_mode_active() == true)
-   {
-	  snprintf(crt_debug_output, sizeof(crt_debug_output),
-	  "\n\n************ CRTSwitchRes Debug output ************\n"
-	  "                                             \n"
-      "    CRT Resolution: %dx%d                     \n"
-      "    Refresh Rate: %lf -> native                  \n"
-      "    Refresh Rate: %d.000000 -> Windows        \n"
-      "                                              \n"
-      "***************************************************\n\n"
-	  , width, height, ra_core_hz, ra_set_core_hz);
-	  
-	  printf("%s",crt_debug_output);
-   }
 }
 
 /* Create correct aspect to fit video if resolution does not exist */
