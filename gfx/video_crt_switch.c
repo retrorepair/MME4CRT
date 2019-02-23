@@ -210,7 +210,7 @@ void crt_switch_res_core(unsigned width, unsigned core_width, unsigned height,
       int crt_switch_center_adjust, int monitor_index, 
       bool dynamic, bool crt_debug_mode)
 {
-  
+  printf("%d",width);
    /* ra_core_hz float passed from within
     * void video_driver_monitor_adjust_system_rates(void) */
    crt_switch_debug = crt_debug_mode;
