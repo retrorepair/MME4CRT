@@ -153,9 +153,8 @@ static bool x11_display_server_set_resolution(void *data,
    crt_name_id += 1;
    snprintf(crt_name, sizeof(crt_name), "CRT%d", crt_name_id);
 
-   dsp                      = XOpenDisplay(NULL);
-   screen                   = DefaultScreen ( dsp );
-   window                   = RootWindow ( dsp, screen );
+   screen                   = DefaultScreen ( g_x11_dpy );
+   window                   = RootWindow ( g_x11_dpy, screen );
 
    /* set core refresh from hz */
    video_monitor_set_refresh_rate(hz);
@@ -261,7 +260,7 @@ static bool x11_display_server_set_resolution(void *data,
       for (i = 0; i < res->noutput; i++)
       {
 
-         XRROutputInfo *outputs = XRRGetOutputInfo (dsp, res, res->outputs[i]);
+         XRROutputInfo *outputs = XRRGetOutputInfo (g_x11_dpy, res, res->outputs[i]);
 
          if (outputs->connection == RR_Connected)
          {
@@ -282,7 +281,7 @@ static bool x11_display_server_set_resolution(void *data,
   }
  if (monitor_index > 0)
  {
-    XRROutputInfo *outputs = XRRGetOutputInfo (dsp, res, res->outputs[monitor_index]);
+    XRROutputInfo *outputs = XRRGetOutputInfo (g_x11_dpy, res, res->outputs[monitor_index]);
     if (outputs->connection == RR_Connected)
     {
 		snprintf(orig_output, sizeof(orig_output),"%s", outputs->name);
