@@ -130,7 +130,7 @@ static void switch_res_crt(unsigned width, unsigned height)
       "    Refresh Rate: %d.000000 -> Windows        \n"
       "                                              \n"
       "***************************************************\n\n"
-	  , ra_core_width, height, ra_core_hz, ra_set_core_hz);
+	  , width, height, ra_core_hz, ra_set_core_hz);
 	  
 	  printf("%s",crt_debug_output);
    }
@@ -210,7 +210,6 @@ void crt_switch_res_core(unsigned width, unsigned core_width, unsigned height,
       int crt_switch_center_adjust, int monitor_index, 
       bool dynamic, bool crt_debug_mode)
 {
-  printf("%d",width);
    /* ra_core_hz float passed from within
     * void video_driver_monitor_adjust_system_rates(void) */
    crt_switch_debug = crt_debug_mode;
