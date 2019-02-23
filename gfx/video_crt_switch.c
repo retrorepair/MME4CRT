@@ -310,7 +310,7 @@ void crt_switch_res_core(unsigned width, unsigned core_width, unsigned height,
       "    Refresh Rate: %d.000000 -> Windows        \n"
       "                                              \n"
       "***************************************************\n\n"
-	  , width, height, ra_hz, ra_set_core_hz);
+	  , width, height, ra_core_hz, ra_set_core_hz);
 	  
 	  printf("%s",crt_debug_output);
    }
