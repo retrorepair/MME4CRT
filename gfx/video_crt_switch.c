@@ -119,6 +119,21 @@ static void switch_res_crt(unsigned width, unsigned height)
    crt_switch_driver_reinit();
 #endif
    video_driver_apply_state_changes();
+   
+   if (crt_debug_mode_active() == true)
+   {
+	  snprintf(crt_debug_output, sizeof(crt_debug_output),
+	  "\n\n************ CRTSwitchRes Debug output ************\n"
+	  "                                             \n"
+      "    CRT Resolution: %dx%d                     \n"
+      "    Refresh Rate: %lf -> native                  \n"
+      "    Refresh Rate: %d.000000 -> Windows        \n"
+      "                                              \n"
+      "***************************************************\n\n"
+	  , ra_core_width, height, ra_core_hz, ra_set_core_hz);
+	  
+	  printf("%s",crt_debug_output);
+   }
 }
 
 /* Create correct aspect to fit video if resolution does not exist */
@@ -298,21 +313,6 @@ void crt_switch_res_core(unsigned width, unsigned core_width, unsigned height,
    {
       video_driver_set_aspect_ratio_value((float)fly_aspect);
       video_driver_apply_state_changes();
-   }
-   
-   if (crt_debug_mode_active() == true)
-   {
-	  snprintf(crt_debug_output, sizeof(crt_debug_output),
-	  "\n\n************ CRTSwitchRes Debug output ************\n"
-	  "                                             \n"
-      "    CRT Resolution: %dx%d                     \n"
-      "    Refresh Rate: %lf -> native                  \n"
-      "    Refresh Rate: %d.000000 -> Windows        \n"
-      "                                              \n"
-      "***************************************************\n\n"
-	  , width, height, ra_core_hz, ra_set_core_hz);
-	  
-	  printf("%s",crt_debug_output);
    }
 
 }
