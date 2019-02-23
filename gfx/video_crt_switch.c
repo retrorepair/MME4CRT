@@ -46,6 +46,7 @@ static int crt_center_adjust      = 0;
 static int crt_tmp_center_adjust  = 0;
 static double p_clock             = 0;
 static bool crt_switch_debug      = false;
+static char crt_debug_output[800] = 0;
 
 static bool first_run             = true;
 
