@@ -299,6 +299,20 @@ void crt_switch_res_core(unsigned width, unsigned core_width, unsigned height,
       video_driver_apply_state_changes();
    }
    
+   if (crt_debug_mode_active() == true)
+   {
+	  snprintf(crt_debug_output, sizeof(crt_debug_output),
+	  "\n\n************ CRTSwitchRes Debug output ************\n"
+	  "                                             \n"
+      "    CRT Resolution: %dx%d                     \n"
+      "    Refresh Rate: %d.000000                   \n"
+      "                                              \n"
+      "***************************************************\n\n"
+	  , width, height, int_hz);
+	  
+	  printf("%s",crt_debug_output);
+   }
+
 }
 
 void crt_video_restore(void)
