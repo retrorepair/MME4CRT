@@ -110,10 +110,10 @@ void crt_aspect_ratio_switch(unsigned width, unsigned height)
 
 static void switch_res_crt(unsigned width, unsigned height)
 {
-   video_display_server_set_resolution(width, native_core_width, height,
+   video_display_server_set_resolution(ra_core_width, native_core_width, height,
          ra_set_core_hz, ra_core_hz, crt_center_adjust, crt_index, crt_center_adjust);
 #if defined(HAVE_VIDEOCORE)
-   crt_rpi_switch(width, native_core_width, height, ra_core_hz);
+   crt_rpi_switch(ra_core_width, native_core_width, height, ra_core_hz);
    video_monitor_set_refresh_rate(ra_core_hz);
    crt_switch_driver_reinit();
 #endif

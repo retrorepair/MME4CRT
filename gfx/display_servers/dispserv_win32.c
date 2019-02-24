@@ -21,6 +21,7 @@
 #include <windows.h>
 #include <ntverp.h>
 
+
 #ifndef COBJMACROS
 #define COBJMACROS
 #define COBJMACROS_DEFINED
@@ -76,7 +77,7 @@ static unsigned win32_orig_width          = 0;
 static unsigned win32_orig_height         = 0;
 static unsigned win32_orig_refresh        = 0;
 static int crt_center                     = 0;
-static unsigned crt_debug_output[800]     = {0};
+static char crt_debug_output[800]     = {0};
 
 static void* win32_display_server_init(void)
 {
@@ -299,7 +300,7 @@ static bool win32_display_server_set_resolution(void *data,
 	  "\n\n************ CRTSwitchRes Debug output ************\n"
 	  "                                             \n"
       "    CRT Resolution: %dx%d                     \n"
-      "    Refresh Rate: %lf                         \n"
+      "    Refresh Rate: %d.000000                   \n"
       "                                              \n"
       "***************************************************\n\n"
 	  , width, height, int_hz);
