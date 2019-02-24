@@ -2,7 +2,7 @@
  *  Copyright (C) 2010-2014 - Hans-Kristian Arntzen
  *  Copyright (C) 2011-2017 - Daniel De Matteis
  *  Copyright (C) 2012-2015 - Michael Lelli
- *  Copyright (C) 2016-2017 - Brad Parker
+ *  Copyright (C) 2016-2019 - Brad Parker
  *
  *  RetroArch is free software: you can redistribute it and/or modify it under the terms
  *  of the GNU General Public License as published by the Free Software Found-
@@ -62,7 +62,7 @@
 #define RGUI_TERM_WIDTH(width)          (((width - RGUI_TERM_START_X(width) - RGUI_TERM_START_X(width)) / (FONT_WIDTH_STRIDE)))
 #define RGUI_TERM_HEIGHT(width, height) (((height - RGUI_TERM_START_Y(height) - RGUI_TERM_START_X(width)) / (FONT_HEIGHT_STRIDE)) - 1)
 
-#define TICKER_SPACER " | "
+#define RGUI_TICKER_SPACER " | "
 
 typedef struct
 {
@@ -1467,7 +1467,7 @@ static void rgui_frame(void *data, video_frame_info_t *video_info)
 static void rgui_render(void *data, bool is_idle)
 {
    menu_animation_ctx_ticker_t ticker;
-   static const char* const ticker_spacer = TICKER_SPACER;
+   static const char* const ticker_spacer = RGUI_TICKER_SPACER;
    unsigned x, y;
    size_t i, end, fb_pitch, old_start;
    unsigned fb_width, fb_height;
@@ -1669,6 +1669,7 @@ static void rgui_render(void *data, bool is_idle)
          char message[255];
          char entry_title_buf[255];
          char type_str_buf[255];
+         menu_entry_t entry;
          char *entry_path                      = NULL;
          unsigned entry_spacing                = 0;
          size_t entry_title_max_len            = 0;
@@ -1687,7 +1688,6 @@ static void rgui_render(void *data, bool is_idle)
          type_str_buf[0]    = '\0';
 
          /* Get current entry */
-         menu_entry_t entry;
          menu_entry_init(&entry);
          menu_entry_get(&entry, 0, (unsigned)i, NULL, true);
 
@@ -2263,7 +2263,7 @@ static void rgui_update_menu_sublabel(rgui_t *rgui)
       
       if (!string_is_empty(entry.sublabel))
       {
-         static const char* const sublabel_spacer = TICKER_SPACER;
+         static const char* const sublabel_spacer = RGUI_TICKER_SPACER;
          struct string_list *list = NULL;
          size_t line_index;
          bool prev_line_empty = true;

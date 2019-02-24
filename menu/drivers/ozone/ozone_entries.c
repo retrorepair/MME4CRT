@@ -1,7 +1,7 @@
 /*  RetroArch - A frontend for libretro.
  *  Copyright (C) 2011-2017 - Daniel De Matteis
  *  Copyright (C) 2014-2017 - Jean-André Santoni
- *  Copyright (C) 2016-2017 - Brad Parker
+ *  Copyright (C) 2016-2019 - Brad Parker
  *  Copyright (C) 2018      - Alfredo Monclús
  *  Copyright (C) 2018      - natinusala
  *  Copyright (C) 2019      - Patrick Scheurenbrand
@@ -408,7 +408,7 @@ border_iterate:
       menu_texture_item tex;
       menu_entry_t entry;
       menu_animation_ctx_ticker_t ticker;
-      static const char* const ticker_spacer = TICKER_SPACER;
+      static const char* const ticker_spacer = OZONE_TICKER_SPACER;
       char entry_value[255];
       char rich_label[255];
       char entry_value_ticker[255];

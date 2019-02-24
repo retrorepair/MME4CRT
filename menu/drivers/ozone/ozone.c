@@ -1,7 +1,7 @@
 /*  RetroArch - A frontend for libretro.
  *  Copyright (C) 2011-2017 - Daniel De Matteis
  *  Copyright (C) 2014-2017 - Jean-André Santoni
- *  Copyright (C) 2016-2017 - Brad Parker
+ *  Copyright (C) 2016-2019 - Brad Parker
  *  Copyright (C) 2018      - Alfredo Monclús
  *  Copyright (C) 2018      - natinusala
  *  Copyright (C) 2019      - Patrick Scheurenbrand
@@ -848,7 +848,7 @@ static void ozone_draw_header(ozone_handle_t *ozone, video_frame_info_t *video_i
 {
    char title[255];
    menu_animation_ctx_ticker_t ticker;
-   static const char* const ticker_spacer = TICKER_SPACER;
+   static const char* const ticker_spacer = OZONE_TICKER_SPACER;
    settings_t *settings     = config_get_ptr();
    unsigned timedate_offset = 0;
 

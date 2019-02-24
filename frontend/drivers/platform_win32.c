@@ -1,6 +1,6 @@
 /* RetroArch - A frontend for libretro.
  * Copyright (C) 2011-2017 - Daniel De Matteis
- * Copyright (C) 2016-2017 - Brad Parker
+ * Copyright (C) 2016-2019 - Brad Parker
  *
  * RetroArch is free software: you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Found-
@@ -27,6 +27,7 @@
 #include <lists/file_list.h>
 #include <file/file_path.h>
 #include <string/stdstring.h>
+#include <features/features_cpu.h>
 
 #ifdef HAVE_CONFIG_H
 #include "../../config.h"
@@ -56,6 +57,8 @@
 static dylib_t dwmlib;
 static dylib_t shell32lib;
 #endif
+
+static char win32_cpu_model_name[64] = {0};
 
 VOID (WINAPI *DragAcceptFiles_func)(HWND, BOOL);
 
@@ -561,6 +564,16 @@ static void frontend_win32_detach_console(void)
 #endif
 }
 
+static const char* frontend_win32_get_cpu_model_name(void)
+{
+#ifdef ANDROID
+   return NULL;
+#else
+   cpu_features_get_model_name(win32_cpu_model_name, sizeof(win32_cpu_model_name));
+   return win32_cpu_model_name;
+#endif
+}
+
 frontend_ctx_driver_t frontend_ctx_win32 = {
    frontend_win32_environment_get,
    frontend_win32_init,
@@ -588,5 +601,6 @@ frontend_ctx_driver_t frontend_ctx_win32 = {
    NULL,                            /* watch_path_for_changes */
    NULL,                            /* check_for_path_changes */
    NULL,                            /* set_sustained_performance_mode */
+   frontend_win32_get_cpu_model_name,
    "win32"
 };

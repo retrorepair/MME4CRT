@@ -64,6 +64,9 @@
 #include "menu/menu_input.h"
 #include "menu/widgets/menu_dialog.h"
 #include "menu/widgets/menu_input_dialog.h"
+#ifdef HAVE_MENU_WIDGETS
+#include "menu/widgets/menu_widgets.h"
+#endif
 #endif
 
 #ifdef HAVE_CHEEVOS
@@ -1259,6 +1262,10 @@ static void retroarch_validate_cpu_features(void)
    uint64_t cpu = cpu_features_get();
    (void)cpu;
 
+#ifdef __MMX__
+   if (!(cpu & RETRO_SIMD_MMX))
+      FAIL_CPU("MMX");
+#endif
 #ifdef __SSE__
    if (!(cpu & RETRO_SIMD_SSE))
       FAIL_CPU("SSE");
@@ -1364,9 +1371,16 @@ bool retroarch_main_init(int argc, char *argv[])
    if (verbosity_is_enabled())
    {
       char str[128];
+      const char *cpu_model = NULL;
       str[0] = '\0';
 
+      cpu_model = frontend_driver_get_cpu_model_name();
+
       RARCH_LOG_OUTPUT("=== Build =======================================\n");
+
+      if (!string_is_empty(cpu_model))
+         RARCH_LOG_OUTPUT("CPU Model Name: %s\n", cpu_model);
+
       retroarch_get_capabilities(RARCH_CAPABILITIES_CPU, str, sizeof(str));
       fprintf(stderr, "%s: %s\n", msg_hash_to_str(MSG_CAPABILITIES), str);
       fprintf(stderr, "Built: %s\n", __DATE__);
@@ -2499,7 +2513,6 @@ void retroarch_fail(int error_code, const char *error)
 
 bool retroarch_main_quit(void)
 {
-
 #ifdef HAVE_DISCORD
       if (discord_is_inited)
    {
@@ -2531,12 +2544,14 @@ global_t *global_get_ptr(void)
    return &g_extern;
 }
 
-void runloop_task_msg_queue_push(retro_task_t *task,
-      const char *msg,
+void runloop_task_msg_queue_push(retro_task_t *task, const char *msg,
       unsigned prio, unsigned duration,
       bool flush)
 {
-   runloop_msg_queue_push(msg, prio, duration, flush, NULL, MESSAGE_QUEUE_ICON_DEFAULT, MESSAGE_QUEUE_CATEGORY_INFO);
+#if defined(HAVE_MENU) && defined(HAVE_MENU_WIDGETS)
+   if (!video_driver_has_widgets() || !menu_widgets_task_msg_queue_push(task, msg, prio, duration, flush))
+#endif
+      runloop_msg_queue_push(msg, prio, duration, flush, NULL, MESSAGE_QUEUE_ICON_DEFAULT, MESSAGE_QUEUE_CATEGORY_INFO);
 }
 
 void runloop_msg_queue_push(const char *msg,
@@ -2546,6 +2561,12 @@ void runloop_msg_queue_push(const char *msg,
       enum message_queue_icon icon, enum message_queue_category category)
 {
    runloop_ctx_msg_info_t msg_info;
+
+#if defined(HAVE_MENU) && defined(HAVE_MENU_WIDGETS)
+   /* People have 60FPS in mind when they use runloop_msg_queue_push */
+   if (video_driver_has_widgets() && menu_widgets_msg_queue_push(msg, duration / 60 * 1000, title, icon, category, prio, flush))
+      return;
+#endif
 
 #ifdef HAVE_THREADS
    runloop_msg_queue_lock();
@@ -2923,6 +2944,10 @@ static enum runloop_state runloop_check_state(
 
 #if defined(HAVE_MENU)
    menu_animation_update();
+
+#ifdef HAVE_MENU_WIDGETS
+   menu_widgets_iterate();
+#endif
 
    if (menu_is_alive)
    {
