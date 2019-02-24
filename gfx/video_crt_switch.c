@@ -46,6 +46,7 @@ static int crt_center_adjust      = 0;
 static int crt_tmp_center_adjust  = 0;
 static double p_clock             = 0;
 static bool crt_switch_debug      = false;
+static char crt_debug_output[800] = {0};
 
 static bool first_run             = true;
 
@@ -118,6 +119,7 @@ static void switch_res_crt(unsigned width, unsigned height)
    crt_switch_driver_reinit();
 #endif
    video_driver_apply_state_changes();
+   
 }
 
 /* Create correct aspect to fit video if resolution does not exist */
@@ -194,7 +196,6 @@ void crt_switch_res_core(unsigned width, unsigned core_width, unsigned height,
       int crt_switch_center_adjust, int monitor_index, 
       bool dynamic, bool crt_debug_mode)
 {
-  
    /* ra_core_hz float passed from within
     * void video_driver_monitor_adjust_system_rates(void) */
    crt_switch_debug = crt_debug_mode;
@@ -205,12 +206,7 @@ void crt_switch_res_core(unsigned width, unsigned core_width, unsigned height,
       width = 320;
       height = 240;
    }
-   
-   
-     
-   
-   //printf("Interval timer: %d CRT_Adaptive_Vsync : %d\n",crt_vsync_interval_t, crt_vsync_interval);
-   
+
   if (height > 350)
   { 
       if (crt_vsync_interval_t  == 0)
@@ -221,8 +217,7 @@ void crt_switch_res_core(unsigned width, unsigned core_width, unsigned height,
       
          crt_switch_vsync(crt_vsync_interval); 
          video_driver_apply_state_changes();
-         
-          
+  
       }
    
       crt_vsync_interval_t++;
@@ -234,19 +229,15 @@ void crt_switch_res_core(unsigned width, unsigned core_width, unsigned height,
              
          crt_switch_vsync(crt_vsync_interval); 
          video_driver_apply_state_changes();
-        
-       
+
       }
       if (crt_vsync_interval_t == 9)
          crt_vsync_interval_t = 0;
    
-  } 
-   
-        
+  }   
    
   if (height <= 350)
   { 
-
      if (crt_vsync_interval == 0)
      {
          crt_vsync_interval = 1;
@@ -254,8 +245,6 @@ void crt_switch_res_core(unsigned width, unsigned core_width, unsigned height,
          video_driver_apply_state_changes();
           
       }
-
-   
    } 
    
      
@@ -298,7 +287,7 @@ void crt_switch_res_core(unsigned width, unsigned core_width, unsigned height,
       video_driver_set_aspect_ratio_value((float)fly_aspect);
       video_driver_apply_state_changes();
    }
-   
+
 }
 
 void crt_video_restore(void)

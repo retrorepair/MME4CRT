@@ -306,6 +306,7 @@ static bool win32_display_server_set_resolution(void *data,
 	  , width, height, int_hz);
 	  
 	  printf("%s",crt_debug_output);
+     
    }
 
    return true;

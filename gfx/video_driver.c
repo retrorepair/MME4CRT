@@ -2645,6 +2645,7 @@ void video_driver_frame(const void *data, unsigned width,
    /* trigger set resolution*/
    if (video_info.crt_switch_resolution)
    {
+       crt_switch_width = width;
 	 //  video_driver_apply_state_changes();
       video_driver_crt_switching_active = true;
 
