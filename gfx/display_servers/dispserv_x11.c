@@ -46,6 +46,7 @@ static unsigned crt_id          = 20;
 static char orig_output[256]    = {0};
 static char old_mode[256]       = {0};
 static char new_mode[256]       = {0};
+static char crt_debug_output[800] = {0};
 static XRRModeInfo crt_rrmode;
 #endif
 
