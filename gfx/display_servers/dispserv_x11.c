@@ -292,7 +292,7 @@ static bool x11_display_server_set_resolution(void *data,
       XRROutputInfo *outputs = XRRGetOutputInfo(dpy, res, res->outputs[monitor_index]);
       crt_mode = &crt_rrmode;
       //xid = res->outputs[monitor_index];
-      XID xid_mode = outputs->modes[crt_rrmode.id];
+      //XID xid_mode = outputs->modes[crt_rrmode.id];
       
       RROutput output = res->outputs[monitor_index];
 
