@@ -39,6 +39,7 @@
 
 #ifdef HAVE_XRANDR
 static char xrandr[1576]        = {0};
+static char xrandr_new_mode[512]= {0};
 static char crt_name[16]        = {0};
 static int crt_name_id          = 0;
 static bool crt_en              = false;
@@ -205,12 +206,19 @@ static bool x11_display_server_set_resolution(void *data,
 
    if (height < 300)
    {
+	   
+      pixel_clock = (hmax * vmax * hz) / 1000000;
       pixel_clock2 = (hmax * vmax * hz);
+      snprintf(xrandr_new_mode, sizeof(xrandr_new_mode), "xrandr --newmode \"%s_%dx%d_%0.2f\" %f %d %d %d %d %d %d %d %d -hsync -vsync",crt_name, width, height, hz, pixel_clock,
+            width, hfp, hsp, hbp, height, vfp, vsp, vbp);
       crt_rrmode.modeFlags =10;
    }
    if (height > 300)
    {
+      pixel_clock = (hmax * vmax * hz) / 1000000 / 2;
       pixel_clock2 = (hmax * vmax * hz)/ 2;
+      snprintf(xrandr_new_mode, sizeof(xrandr_new_mode), "xrandr --newmode \"%s_%dx%d_%0.2f\" %f %d %d %d %d %d %d %d %d interlace -hsync -vsync",crt_name, width, height, hz, pixel_clock,
+            width, hfp, hsp, hbp, height, vfp, vsp, vbp);
       crt_rrmode.modeFlags += 16;
    }
    /* above code is the modeline generator */  
@@ -249,14 +257,14 @@ static bool x11_display_server_set_resolution(void *data,
          if (outputs->connection == RR_Connected)
          {
             snprintf(orig_output, sizeof(orig_output), "%s", outputs->name);
-            XRRCreateMode(dpy, window, crt_mode);           
+          //  XRRCreateMode(dpy, window, crt_mode);           
           //  XRRAddOutputMode(dpy, screen, xid_mode);
             if (crt_name_id < 1)
             {  
-               snprintf(xrandr, sizeof(xrandr), "xrandr --addmode \"%s\" \"%s\" && xrandr --output \"%s\" --mode \"%s\"",outputs->name, new_mode, outputs->name, new_mode);
+               snprintf(xrandr, sizeof(xrandr), "%s && xrandr --addmode \"%s\" \"%s\" && xrandr --output \"%s\" --mode \"%s\"", xrandr_new_mode, outputs->name, new_mode, outputs->name, new_mode);
                system(xrandr);
 		    }else{
-		       snprintf(xrandr, sizeof(xrandr), "xrandr --addmode \"%s\" \"%s\" && xrandr --output \"%s\" --mode \"%s\" && xrandr --delmode \"%s\" \"%s\" && xrandr --rmmode \"%s\"",outputs->name, new_mode, outputs->name, new_mode, orig_output, old_mode, old_mode);
+		       snprintf(xrandr, sizeof(xrandr), "%s && xrandr --addmode \"%s\" \"%s\" && xrandr --output \"%s\" --mode \"%s\" && xrandr --delmode \"%s\" \"%s\" && xrandr --rmmode \"%s\"", xrandr_new_mode, outputs->name, new_mode, outputs->name, new_mode, orig_output, old_mode, old_mode);
 		       system(xrandr);                
             }
          }
@@ -270,14 +278,14 @@ static bool x11_display_server_set_resolution(void *data,
       if (outputs->connection == RR_Connected)
       {
             snprintf(orig_output, sizeof(orig_output), "%s", outputs->name);
-            XRRCreateMode(dpy, window, crt_mode);           
+         //  XRRCreateMode(dpy, window, crt_mode);           
         //  XRRAddOutputMode(dpy, screen, xid_mode);
             if (crt_name_id == 0)
             {  
-               snprintf(xrandr, sizeof(xrandr), "xrandr --addmode \"%s\" \"%s\" && xrandr --output \"%s\" --mode \"%s\"", outputs->name, new_mode, outputs->name, new_mode);
+               snprintf(xrandr, sizeof(xrandr), "%s && xrandr --addmode \"%s\" \"%s\" && xrandr --output \"%s\" --mode \"%s\"", xrandr_new_mode, outputs->name, new_mode, outputs->name, new_mode);
             system(xrandr);
 		    }else{
-		       snprintf(xrandr, sizeof(xrandr), "xrandr --addmode \"%s\" \"%s\" && xrandr --output \"%s\" --mode \"%s\" && xrandr --delmode \"%s\" \"%s\" && xrandr --rmmode \"%s\"",outputs->name, new_mode, outputs->name, new_mode, orig_output, old_mode, old_mode);
+		       snprintf(xrandr, sizeof(xrandr), "%s && xrandr --addmode \"%s\" \"%s\" && xrandr --output \"%s\" --mode \"%s\" && xrandr --delmode \"%s\" \"%s\" && xrandr --rmmode \"%s\"", xrandr_new_mode, outputs->name, new_mode, outputs->name, new_mode, orig_output, old_mode, old_mode);
 		       system(xrandr);                
             }
          }
