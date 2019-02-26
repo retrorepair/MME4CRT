@@ -260,13 +260,15 @@ static bool x11_display_server_set_resolution(void *data,
          XRROutputInfo *outputs = XRRGetOutputInfo(dpy, res, res->outputs[i]);
          crt_mode = &crt_rrmode;
          xid = res->outputs[i];
+         XID xid_mode = outputs->modes[crt_rrmode.id];
 
          if (outputs->connection == RR_Connected)
          {
             snprintf(orig_output, sizeof(orig_output), "%s", outputs->name);
             XRRCreateMode(dpy, window, crt_mode);
-            snprintf(xrandr, sizeof(xrandr), "xrandr --addmode \"%s\" \"%s\"",outputs->name, new_mode);
-            system(xrandr);
+            XRRAddOutputMode(dpy, xid, xid_mode);
+           // snprintf(xrandr, sizeof(xrandr), "xrandr --addmode \"%s\" \"%s\"",outputs->name, new_mode);
+          //  system(xrandr);
             snprintf(xrandr, sizeof(xrandr),
                   "xrandr --output \"%s\" --mode \"%s\"",
                   outputs->name, new_mode);
@@ -291,8 +293,8 @@ static bool x11_display_server_set_resolution(void *data,
    {
       XRROutputInfo *outputs = XRRGetOutputInfo(dpy, res, res->outputs[monitor_index]);
       crt_mode = &crt_rrmode;
-      //xid = res->outputs[monitor_index];
-      //XID xid_mode = outputs->modes[crt_rrmode.id];
+      xid = res->outputs[monitor_index];
+      XID xid_mode = outputs->modes[crt_rrmode.id];
       
       RROutput output = res->outputs[monitor_index];
 
@@ -300,7 +302,7 @@ static bool x11_display_server_set_resolution(void *data,
       {
          snprintf(orig_output, sizeof(orig_output), "%s", outputs->name);
          XRRCreateMode(dpy, window, crt_mode);
-       //  XRRAddOutputMode(dpy, xid, xid_mode);
+         XRRAddOutputMode(dpy, xid, xid_mode);
        //  XRRDeleteOutputMode (dpy, xid,
         //            crt_old_rrmode.id);
      //    snprintf(xrandr, sizeof(xrandr),
