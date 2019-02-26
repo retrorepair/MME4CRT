@@ -142,7 +142,7 @@ static bool x11_display_server_set_resolution(void *data,
    Window window;
    XRRScreenResources  *res = NULL;
    Display *dpy             = NULL;
-   XID xid;
+   XID xid                  = NULL;
    int i                    = 0;
    int hfp                  = 0;
    int hsp                  = 0;
@@ -260,13 +260,11 @@ static bool x11_display_server_set_resolution(void *data,
          XRROutputInfo *outputs = XRRGetOutputInfo(dpy, res, res->outputs[i]);
          crt_mode = &crt_rrmode;
          xid = res->outputs[i];
-         XID xid_mode = outputs->modes[crt_rrmode.id];
 
          if (outputs->connection == RR_Connected)
          {
             snprintf(orig_output, sizeof(orig_output), "%s", outputs->name);
             XRRCreateMode(dpy, window, crt_mode);
-          //  XRRAddOutputMode(dpy, xid, xid_mode);
             snprintf(xrandr, sizeof(xrandr), "xrandr --addmode \"%s\" \"%s\"",outputs->name, new_mode);
             system(xrandr);
             snprintf(xrandr, sizeof(xrandr),
@@ -294,7 +292,6 @@ static bool x11_display_server_set_resolution(void *data,
       XRROutputInfo *outputs = XRRGetOutputInfo(dpy, res, res->outputs[monitor_index]);
       crt_mode = &crt_rrmode;
       xid = res->outputs[monitor_index];
-      XID xid_mode = outputs->modes[crt_rrmode.id];
       
       RROutput output = res->outputs[monitor_index];
 
@@ -302,13 +299,13 @@ static bool x11_display_server_set_resolution(void *data,
       {
          snprintf(orig_output, sizeof(orig_output), "%s", outputs->name);
          XRRCreateMode(dpy, window, crt_mode);
-      //   XRRAddOutputMode(dpy, xid, xid_mode);
-     //    XRRDeleteOutputMode (dpy, xid,
+         XRRAddOutputMode(dpy, xid, crt_rrmode.id);
+       //  XRRDeleteOutputMode (dpy, xid,
         //            crt_old_rrmode.id);
          snprintf(xrandr, sizeof(xrandr),
-              "xrandr --output \"%s\" --mode \"%s\"",
+               "xrandr --output \"%s\" --mode \"%s\"",
                outputs->name, new_mode);
-         system(xrandr);
+         system(xranndr);
          if (crt_name_id > 0)
          {  
              snprintf(xrandr, sizeof(xrandr),
@@ -402,8 +399,8 @@ const char *x11_display_server_get_output_options(void *data)
 static void x11_display_server_set_screen_orientation(enum rotation rotation)
 {
    
- /*  int i, j;
-   XRRScreenResources *screen; */
+   int i, j;
+   XRRScreenResources *screen;
    /* switched to 
     * using XOpenDisplay() due to deinit order issue with g_x11_dpy when restoring original rotation on exit */
   /* Display *dpy = XOpenDisplay(0);
@@ -553,7 +550,7 @@ static enum rotation x11_display_server_get_screen_orientation(void)
    }
    return rotation;
 */
-   return 0;
+   retrurn 0;
 }
 #endif
 
