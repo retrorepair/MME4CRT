@@ -207,7 +207,7 @@ void crt_switch_res_core(unsigned width, unsigned core_width, unsigned height,
       height = 240;
    }
 
-  if (height > 350)
+  if (height > 350 && hz > 58 && hz < 62)
   { 
       if (crt_vsync_interval_t  == 0)
       {	   
@@ -236,7 +236,7 @@ void crt_switch_res_core(unsigned width, unsigned core_width, unsigned height,
    
   }   
    
-  if (height <= 350)
+  if (height <= 300)
   { 
      if (crt_vsync_interval == 0)
      {
