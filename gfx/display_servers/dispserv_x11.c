@@ -305,7 +305,7 @@ static bool x11_display_server_set_resolution(void *data,
          snprintf(xrandr, sizeof(xrandr),
                "xrandr --output \"%s\" --mode \"%s\"",
                outputs->name, new_mode);
-         system(xranndr);
+         system(xrandr);
          if (crt_name_id > 0)
          {  
              snprintf(xrandr, sizeof(xrandr),
@@ -399,8 +399,8 @@ const char *x11_display_server_get_output_options(void *data)
 static void x11_display_server_set_screen_orientation(enum rotation rotation)
 {
    
-   int i, j;
-   XRRScreenResources *screen;
+ /*  int i, j;
+   XRRScreenResources *screen; */
    /* switched to 
     * using XOpenDisplay() due to deinit order issue with g_x11_dpy when restoring original rotation on exit */
   /* Display *dpy = XOpenDisplay(0);
@@ -550,7 +550,7 @@ static enum rotation x11_display_server_get_screen_orientation(void)
    }
    return rotation;
 */
-   retrurn 0;
+   return 0;
 }
 #endif
 
