@@ -142,7 +142,7 @@ static bool x11_display_server_set_resolution(void *data,
    Window window;
    XRRScreenResources  *res = NULL;
    Display *dpy             = NULL;
-   XID xid                  = NULL;
+   XID xid;
    int i                    = 0;
    int hfp                  = 0;
    int hsp                  = 0;
