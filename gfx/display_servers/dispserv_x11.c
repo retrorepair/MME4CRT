@@ -219,8 +219,8 @@ static bool x11_display_server_set_resolution(void *data,
    {
       pixel_clock = (hmax * vmax * hz) / 1000000 / 2;
       pixel_clock2 = (hmax * vmax * hz)/ 2;
-      snprintf(xrandr_new_mode, sizeof(xrandr_new_mode), "xrandr --newmode \"%s_%dx%d_%0.2f\" %f %d %d %d %d %d %d %d %d interlace -hsync -vsync",crt_name, width, height, hz, pixel_clock,
-            width, hfp, hsp, hbp, height, vfp, vsp, vbp);
+  //    snprintf(xrandr_new_mode, sizeof(xrandr_new_mode), "xrandr --newmode \"%s_%dx%d_%0.2f\" %f %d %d %d %d %d %d %d %d interlace -hsync -vsync",crt_name, width, height, hz, pixel_clock,
+    //        width, hfp, hsp, hbp, height, vfp, vsp, vbp);
       crt_rrmode.modeFlags += 16;
    }
    /* above code is the modeline generator */  
@@ -263,10 +263,15 @@ static bool x11_display_server_set_resolution(void *data,
           //  XRRAddOutputMode(dpy, screen, xid_mode);
             if (crt_name_id < 1)
             {  
-               snprintf(xrandr, sizeof(xrandr), "%s && xrandr --addmode \"%s\" \"%s\" && xrandr --output \"%s\" --mode \"%s\"", xrandr_new_mode, outputs->name, new_mode, outputs->name, new_mode);
+				
+			   snprintf(xrandr, sizeof(xrandr), "%s", xrandr_new_mode);
                system(xrandr);
-		    }else{
-		       snprintf(xrandr, sizeof(xrandr), "%s && xrandr --addmode \"%s\" \"%s\" && xrandr --output \"%s\" --mode \"%s\" && xrandr --delmode \"%s\" \"%s\" && xrandr --rmmode \"%s\"", xrandr_new_mode, outputs->name, new_mode, outputs->name, new_mode, orig_output, old_mode, old_mode);
+               snprintf(xrandr, sizeof(xrandr), "sxrandr --addmode \"%s\" \"%s\" && xrandr --output \"%s\" --mode \"%s\"", outputs->name, new_mode, outputs->name, new_mode);
+               system(xrandr);
+		    }else if (crt_name_id > 0){
+			    snprintf(xrandr, sizeof(xrandr), "%s", xrandr_new_mode);
+               system(xrandr);
+		       snprintf(xrandr, sizeof(xrandr), "xrandr --addmode \"%s\" \"%s\" && xrandr --output \"%s\" --mode \"%s\" && xrandr --delmode \"%s\" \"%s\" && xrandr --rmmode \"%s\"", outputs->name, new_mode, outputs->name, new_mode, orig_output, old_mode, old_mode);
 		       system(xrandr);                
             }
          }
@@ -280,18 +285,23 @@ static bool x11_display_server_set_resolution(void *data,
       if (outputs->connection == RR_Connected)
       {
             snprintf(orig_output, sizeof(orig_output), "%s", outputs->name);
-         //  XRRCreateMode(dpy, window, crt_mode);           
+         //   XRRCreateMode(dpy, window, crt_mode);
+         
         //  XRRAddOutputMode(dpy, screen, xid_mode);
             if (crt_name_id < 1)
             {  
-               snprintf(xrandr, sizeof(xrandr), "%s && xrandr --addmode \"%s\" \"%s\" && xrandr --output \"%s\" --mode \"%s\"", xrandr_new_mode, outputs->name, new_mode, outputs->name, new_mode);
-            system(xrandr);
-		    }else{
-		       snprintf(xrandr, sizeof(xrandr), "%s && xrandr --addmode \"%s\" \"%s\" && xrandr --output \"%s\" --mode \"%s\" && xrandr --delmode \"%s\" \"%s\" && xrandr --rmmode \"%s\"", xrandr_new_mode, outputs->name, new_mode, outputs->name, new_mode, orig_output, old_mode, old_mode);
+			   snprintf(xrandr, sizeof(xrandr), "%s", xrandr_new_mode);
+               system(xrandr);
+               snprintf(xrandr, sizeof(xrandr), "xrandr --addmode \"%s\" \"%s\" && xrandr --output \"%s\" --mode \"%s\"", outputs->name, new_mode, outputs->name, new_mode);
+               system(xrandr);
+		    }else if (crt_name_id > 0){
+			   snprintf(xrandr, sizeof(xrandr), "%s", xrandr_new_mode);
+               system(xrandr);
+		       snprintf(xrandr, sizeof(xrandr), "xrandr  --current --addmode \"%s\" \"%s\" && xrandr --current --output \"%s\" --mode \"%s\" && xrandr --current --delmode \"%s\" \"%s\" && xrandr --current --rmmode \"%s\"", outputs->name, new_mode, outputs->name, new_mode, orig_output, old_mode, old_mode);
 		       system(xrandr);                
             }
-         }
       }
+   }
    
 
    if (crt_debug_mode_active() == true)
@@ -323,32 +333,32 @@ static bool x11_display_server_set_resolution(void *data,
 const char *x11_display_server_get_output_options(void *data)
 {
 #ifdef HAVE_XRANDR
-   Display *dpy;
-   XRRScreenResources *res;
-   XRROutputInfo *info;
-   Window root;
-   int i;
-   static char s[PATH_MAX_LENGTH];
+   //Display *dpy;
+   //XRRScreenResources *res;
+   //XRROutputInfo *info;
+   //Window root;
+   //int i;
+   //static char s[PATH_MAX_LENGTH];
 
-   if (!(dpy = XOpenDisplay(0)))
-      return NULL;
+   //if (!(dpy = XOpenDisplay(0)))
+      //return NULL;
 
-   root = RootWindow(dpy, DefaultScreen(dpy));
+   //root = RootWindow(dpy, DefaultScreen(dpy));
 
-   if (!(res = XRRGetScreenResources(dpy, root)))
-      return NULL;
+   //if (!(res = XRRGetScreenResources(dpy, root)))
+      //return NULL;
 
-   for (i = 0; i < res->noutput; i++)
-   {
-      if (!(info = XRRGetOutputInfo(dpy, res, res->outputs[i])))
-         return NULL;
+   //for (i = 0; i < res->noutput; i++)
+   //{
+      //if (!(info = XRRGetOutputInfo(dpy, res, res->outputs[i])))
+         //return NULL;
 
-      strlcat(s, info->name, sizeof(s));
-      if ((i+1) < res->noutput)
-         strlcat(s, "|", sizeof(s));
-   }
+      //strlcat(s, info->name, sizeof(s));
+      //if ((i+1) < res->noutput)
+         //strlcat(s, "|", sizeof(s));
+   //}
 
-   return s;
+   return "s";
 #else
    /* TODO/FIXME - hardcoded for now; list should be built up dynamically later */
    return "HDMI-0|HDMI-1|HDMI-2|HDMI-3|DVI-0|DVI-1|DVI-2|DVI-3|VGA-0|VGA-1|VGA-2|VGA-3|Config";
