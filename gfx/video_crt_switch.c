@@ -88,6 +88,10 @@ static void switch_crt_hz(void)
       if (ra_core_hz >= 114)
          ra_set_core_hz = 120;
    }
+   
+   /* Temp fix for PrBoom's odd 40hz default refresh*/
+   if (ra_core_hz == 40)
+      ra_core_hz = 60;
 
    video_monitor_set_refresh_rate(ra_set_core_hz);
 
@@ -104,7 +108,7 @@ bool crt_debug_mode_active(void)
 
 void crt_aspect_ratio_switch(unsigned width, unsigned height)
 {
-   /* send aspect float to videeo_driver */
+   /* send aspect float to video_driver */
    fly_aspect = (float)width / height;
    video_driver_set_aspect_ratio_value((float)fly_aspect);
 }
@@ -158,7 +162,7 @@ static void crt_screen_setup_aspect(unsigned width, unsigned height)
       crt_aspect_ratio_switch(width, height);
    }
 
-   if (height > 200 && height < 224)
+   if (height >= 200 && height < 224)
    {
       crt_aspect_ratio_switch(width, height);
       height = 224;
