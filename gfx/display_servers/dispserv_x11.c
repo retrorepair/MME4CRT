@@ -297,7 +297,7 @@ static bool x11_display_server_set_resolution(void *data,
 		    }else if (crt_name_id > 0){
 			   snprintf(xrandr, sizeof(xrandr), "%s", xrandr_new_mode);
                system(xrandr);
-		       snprintf(xrandr, sizeof(xrandr), "xrandr  --current --addmode \"%s\" \"%s\" && xrandr --current --output \"%s\" --mode \"%s\" && xrandr --current --delmode \"%s\" \"%s\" && xrandr --current --rmmode \"%s\"", outputs->name, new_mode, outputs->name, new_mode, orig_output, old_mode, old_mode);
+		       snprintf(xrandr, sizeof(xrandr), "xrandr  --addmode \"%s\" \"%s\" && xrandr --output \"%s\" --mode \"%s\" && xrandr --delmode \"%s\" \"%s\" && xrandr --rmmode \"%s\"", outputs->name, new_mode, outputs->name, new_mode, orig_output, old_mode, old_mode);
 		       system(xrandr);                
             }
       }
