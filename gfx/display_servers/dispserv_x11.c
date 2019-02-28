@@ -219,8 +219,8 @@ static bool x11_display_server_set_resolution(void *data,
    {
       pixel_clock = (hmax * vmax * hz) / 1000000 / 2;
       pixel_clock2 = (hmax * vmax * hz)/ 2;
-  //    snprintf(xrandr_new_mode, sizeof(xrandr_new_mode), "xrandr --newmode \"%s_%dx%d_%0.2f\" %f %d %d %d %d %d %d %d %d interlace -hsync -vsync",crt_name, width, height, hz, pixel_clock,
-    //        width, hfp, hsp, hbp, height, vfp, vsp, vbp);
+      snprintf(xrandr_new_mode, sizeof(xrandr_new_mode), "xrandr --newmode \"%s_%dx%d_%0.2f\" %f %d %d %d %d %d %d %d %d interlace -hsync -vsync",crt_name, width, height, hz, pixel_clock,
+            width, hfp, hsp, hbp, height, vfp, vsp, vbp);
       crt_rrmode.modeFlags += 16;
    }
    /* above code is the modeline generator */  
@@ -266,7 +266,7 @@ static bool x11_display_server_set_resolution(void *data,
 				
 			   snprintf(xrandr, sizeof(xrandr), "%s", xrandr_new_mode);
                system(xrandr);
-               snprintf(xrandr, sizeof(xrandr), "sxrandr --addmode \"%s\" \"%s\" && xrandr --output \"%s\" --mode \"%s\"", outputs->name, new_mode, outputs->name, new_mode);
+               snprintf(xrandr, sizeof(xrandr), "xrandr --addmode \"%s\" \"%s\" && xrandr --output \"%s\" --mode \"%s\"", outputs->name, new_mode, outputs->name, new_mode);
                system(xrandr);
 		    }else if (crt_name_id > 0){
 			    snprintf(xrandr, sizeof(xrandr), "%s", xrandr_new_mode);
