@@ -88,10 +88,6 @@ static void switch_crt_hz(void)
       if (ra_core_hz >= 114)
          ra_set_core_hz = 120;
    }
-   
-   /* Temp fix for PrBoom's odd 40hz default refresh*/
-   if (ra_core_hz == 40)
-      ra_core_hz = 60;
 
    video_monitor_set_refresh_rate(ra_set_core_hz);
 
